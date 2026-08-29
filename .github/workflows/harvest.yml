@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: harvest
-  cancel-in-progress: false
+  cancel-in-progress: true      # a newer run supersedes one still in flight
 
 jobs:
   harvest:
@@ -38,8 +38,18 @@ jobs:
           git add wire.json
           if git diff --cached --quiet; then
             echo "No change to wire.json"
-          else
-            COUNT=$(python3 -c "import json;print(json.load(open('wire.json'))['counts']['stories'])")
-            git commit -m "wire: $COUNT stories ($(date -u '+%Y-%m-%d %H:%M UTC'))"
-            git push
+            exit 0
           fi
+          COUNT=$(python3 -c "import json;print(json.load(open('wire.json'))['counts']['stories'])")
+          git commit -m "wire: $COUNT stories ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              echo "Pushed on attempt $attempt"
+              exit 0
+            fi
+            echo "Push rejected — main moved. Rebasing and retrying (attempt $attempt)."
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+            sleep $((attempt * 5))
+          done
+          echo "Could not push after five attempts."
+          exit 1
