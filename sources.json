@@ -1,23 +1,26 @@
 {
-  "_note": "Edit this file to add, remove or retune wires. harvest.py reads it directly; nothing else needs changing. 'query' is only used for the gnews block, and is written in the language of the locale. If a wire 404s, the run log names it and the page shows it as unreachable — fix the URL here or drop the entry.",
+  "_note": "Edit this file to add, remove or retune wires. harvest.py reads it directly; nothing else needs changing. 'query' is only used for the gnews block, and is written in the language of the locale. If a wire 404s, the run log names it and the page shows it as unreachable — fix the URL here or drop the entry. Set \"strict\": true on a general space desk — its stories must name the search for life outright, not merely a body that might host it.",
   "direct": [
     {
       "name": "NASA",
       "lang": "en",
       "region": "Institutional",
-      "url": "https://www.nasa.gov/feed/"
+      "url": "https://www.nasa.gov/feed/",
+      "strict": true
     },
     {
       "name": "NASA JPL",
       "lang": "en",
       "region": "Institutional",
-      "url": "https://www.jpl.nasa.gov/feeds/news/"
+      "url": "https://www.jpl.nasa.gov/feeds/news/",
+      "strict": true
     },
     {
       "name": "ESA — Space Science",
       "lang": "en",
       "region": "Institutional",
-      "url": "https://www.esa.int/rssfeed/Our_Activities/Space_Science"
+      "url": "https://www.esa.int/rssfeed/Our_Activities/Space_Science",
+      "strict": true
     },
     {
       "name": "Phys.org — Astrobiology",
@@ -41,19 +44,22 @@
       "name": "ScienceDaily — Astronomy",
       "lang": "en",
       "region": "Science desk",
-      "url": "https://www.sciencedaily.com/rss/space_time/astronomy.xml"
+      "url": "https://www.sciencedaily.com/rss/space_time/astronomy.xml",
+      "strict": true
     },
     {
       "name": "Universe Today",
       "lang": "en",
       "region": "Science desk",
-      "url": "https://www.universetoday.com/feed"
+      "url": "https://www.universetoday.com/feed",
+      "strict": true
     },
     {
       "name": "Space.com",
       "lang": "en",
       "region": "Science desk",
-      "url": "https://www.space.com/feeds/all"
+      "url": "https://www.space.com/feeds/all",
+      "strict": true
     },
     {
       "name": "Astrobiology.com",
@@ -65,19 +71,22 @@
       "name": "Sky & Telescope",
       "lang": "en",
       "region": "Science desk",
-      "url": "https://skyandtelescope.org/feed/"
+      "url": "https://skyandtelescope.org/feed/",
+      "strict": true
     },
     {
       "name": "Planetary Society",
       "lang": "en",
       "region": "Institutional",
-      "url": "https://www.planetary.org/rss/articles"
+      "url": "https://www.planetary.org/rss/articles",
+      "strict": true
     },
     {
       "name": "DLR (DE)",
       "lang": "de",
       "region": "Institutional",
-      "url": "https://www.dlr.de/de/aktuelles/nachrichten/rss"
+      "url": "https://www.dlr.de/de/aktuelles/nachrichten/rss",
+      "strict": true
     },
     {
       "name": "arXiv — biosignatures",
@@ -103,19 +112,22 @@
       "name": "Astronomy Now",
       "lang": "en",
       "region": "Science desk",
-      "url": "https://astronomynow.com/feed/"
+      "url": "https://astronomynow.com/feed/",
+      "strict": true
     },
     {
       "name": "EarthSky — Space",
       "lang": "en",
       "region": "Science desk",
-      "url": "https://earthsky.org/space/feed/"
+      "url": "https://earthsky.org/space/feed/",
+      "strict": true
     },
     {
       "name": "SpaceDaily",
       "lang": "en",
       "region": "Science desk",
-      "url": "https://www.spacedaily.com/spacedaily.xml"
+      "url": "https://www.spacedaily.com/spacedaily.xml",
+      "strict": true
     }
   ],
   "gnews": [
