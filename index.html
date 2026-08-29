@@ -186,6 +186,14 @@
 .bsg-search::placeholder { color: var(--ink-faint); }
 .bsg-search:focus { outline: none; border-color: rgba(255,255,255,0.24); }
 
+.bsg-tr { display: flex; align-items: center; gap: 0.3rem; flex: 0 0 auto; }
+.bsg-tr select { font-family: inherit; font-size: 0.62rem; color: var(--ink);
+    background: rgba(255,255,255,0.05); border: 1px solid var(--line); border-radius: 999px;
+    padding: 0.26rem 0.5rem; cursor: pointer; max-width: 150px; }
+.bsg-tr select:focus { outline: none; border-color: rgba(255,255,255,0.28); }
+.bsg-mt { color: var(--ink-faint); border: 1px solid var(--line-soft); border-radius: 999px;
+    padding: 0.02rem 0.38rem; letter-spacing: 0.1em; }
+.bsg-orig { color: var(--ink-faint); text-decoration: underline; text-underline-offset: 2px; }
 .bsg-list { flex: 1 1 auto; min-height: 118px; overflow-y: auto; scrollbar-width: thin; overscroll-behavior: contain; }
 .bsg-item { display: block; padding: 0.5rem 0.9rem; border-bottom: 1px solid var(--line-soft); text-decoration: none; color: inherit; }
 .bsg-item:last-child { border-bottom: 0; }
@@ -276,6 +284,7 @@
             <div class="bsg-head-tools">
                 <input class="bsg-search" id="bsgSearch" type="search" placeholder="plume, dimethyl sulfide, Perseverance…" aria-label="Filter headlines">
                 <button class="bsg-link" id="bsgClear">Clear</button>
+                <span class="bsg-tr"><label for="bsgTr" class="bsg-key" style="min-width:0">Translate</label><select id="bsgTr" aria-label="Translate the feed"></select></span>
                 <button class="bsg-link" id="bsgRefresh">Refresh</button>
             </div>
         </div>
@@ -309,6 +318,14 @@
             <p>A first detection could come within 10 to 20 years — from returned Mars samples, direct sampling of the Enceladus plume, or what Europa Clipper finds beneath the ice.</p>
         </div>
     </div>
+        <p class="bsg-note">
+            <strong>Translation.</strong> The <em>Translate</em> control at the top renders the headlines and
+            snippets on screen into any of 26 languages, through a free public translation endpoint — no account,
+            no key, nothing stored. A translated row is marked as machine translation and keeps the publisher's
+            original wording on hover, because a machine rendering is not the publisher's words. If the endpoint
+            is unavailable the row simply stays in its original language rather than emptying. Translation
+            applies to what is on screen; scroll further or widen a filter and press the control again.
+        </p>
     </div>
 
     <div class="bsg-sheet" id="bsgSheetSources" role="dialog" aria-label="Sources and coverage">
@@ -634,7 +651,101 @@ const TOPIC_COLOR = {
     'titan': '#c3b8e8', 'venus': '#e8c98c', 'exoplanet': '#8fd0c0', 'seti': '#d59fd0', 'method': '#9fb0c8'
 };
 
-const state = { items: [], topics: [], languages: {}, sources: [], generated: null,
+/* ============================================================
+   Translation. Two independent things, because one of them can
+   fail and the other cannot:
+
+   1. In-place machine translation of the headlines and snippets
+      you are looking at, through a free public endpoint. No key,
+      no account. If it is unavailable the row falls back to the
+      original text and says so rather than showing nothing.
+   2. A per-row link that opens the article itself translated,
+      which is a plain URL and works even when (1) does not.
+
+   Machine translation is never presented as the publisher's own
+   words: a translated row is marked, and the original title is
+   kept on hover.
+   ============================================================ */
+const TR_LANGS = [
+    ['off', 'Off — original'], ['en', 'English'], ['es', 'Español'], ['pt', 'Português'],
+    ['fr', 'Français'], ['de', 'Deutsch'], ['it', 'Italiano'], ['nl', 'Nederlands'],
+    ['sv', 'Svenska'], ['pl', 'Polski'], ['el', 'Ελληνικά'], ['ru', 'Русский'],
+    ['uk', 'Українська'], ['tr', 'Türkçe'], ['ar', 'العربية'], ['he', 'עברית'],
+    ['fa', 'فارسی'], ['hi', 'हिन्दी'], ['bn', 'বাংলা'], ['id', 'Bahasa Indonesia'],
+    ['vi', 'Tiếng Việt'], ['th', 'ไทย'], ['ja', '日本語'], ['zh-CN', '简体中文'],
+    ['zh-TW', '繁體中文'], ['ko', '한국어'], ['sw', 'Kiswahili']
+];
+const trCache = new Map();        // key: lang + '\u0000' + text
+let trPending = false;
+
+function trKey(lang, text) { return lang + '\u0000' + text; }
+
+async function trOne(text, lang) {
+    const endpoints = [
+        () => 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=' +
+              lang + '&dt=t&q=' + encodeURIComponent(text),
+        () => 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) +
+              '&langpair=autodetect|' + lang
+    ];
+    for (let i = 0; i < endpoints.length; i++) {
+        try {
+            const res = await fetch(endpoints[i]());
+            if (!res.ok) continue;
+            const data = await res.json();
+            if (i === 0 && Array.isArray(data) && Array.isArray(data[0])) {
+                const out = data[0].map(seg => (seg && seg[0]) || '').join('');
+                if (out.trim()) return out;
+            }
+            if (i === 1 && data && data.responseData && data.responseData.translatedText) {
+                return data.responseData.translatedText;
+            }
+        } catch (e) { /* try the next one */ }
+    }
+    return null;
+}
+
+async function trFill(items, lang, onDone) {
+    // only what is on screen, and only what is not already cached
+    const wanted = [];
+    items.forEach(i => {
+        [i.title, i.snippet].forEach(t => {
+            if (t && !trCache.has(trKey(lang, t))) wanted.push(t);
+        });
+    });
+    if (!wanted.length) { onDone(false); return; }
+
+    trPending = true;
+    let changed = false;
+    const queue = wanted.slice(0, 120);
+    async function worker() {
+        while (queue.length) {
+            const text = queue.shift();
+            const out = await trOne(text, lang);
+            trCache.set(trKey(lang, text), out || text);   // fall back to the original
+            changed = true;
+        }
+    }
+    await Promise.all([worker(), worker(), worker(), worker()]);
+    trPending = false;
+    onDone(changed);
+}
+
+function trText(text, lang) {
+    if (!text || lang === 'off') return text;
+    const hit = trCache.get(trKey(lang, text));
+    return hit === undefined ? text : hit;
+}
+
+/* the article itself, translated, as a plain link */
+function trUrl(url, lang) {
+    try {
+        const u = new URL(url);
+        return 'https://translate.google.com/translate?sl=auto&tl=' + lang +
+               '&u=' + encodeURIComponent(u.href);
+    } catch (e) { return url; }
+}
+
+const state = { tl: 'off', items: [], topics: [], languages: {}, sources: [], generated: null,
                 topic: 'all', langs: new Set(), query: '', shown: 40, loading: false };
 
 const $list = document.getElementById('bsgList');
@@ -662,7 +773,10 @@ function timeAgo(ts) {
 }
 function langName(c) { return state.languages[c] || c; }
 function topicLabel(id) { const t = state.topics.find(t => t.id === id); return t ? t.label : id; }
-function setStatus(text, cls) { $status.textContent = text; $dot.className = 'bsg-dot' + (cls ? ' ' + cls : ''); }
+let lastStatus = '';
+function refreshStatus() { if (lastStatus) $status.textContent = lastStatus; }
+function setStatus(text, cls) { $status.textContent = text;
+    if (text.indexOf('Translating') === -1) lastStatus = text; $dot.className = 'bsg-dot' + (cls ? ' ' + cls : ''); }
 
 async function load() {
     if (state.loading) return;
@@ -739,9 +853,11 @@ function render() {
             return '<a class="bsg-item" href="' + esc(i.link) + '" target="_blank" rel="noopener noreferrer">' +
                 '<div class="bsg-meta"><span class="bsg-lang">' + esc(langName(i.lang)) + '</span>' +
                 '<span>' + esc(i.outlet) + '</span><span>' + esc(i.region) + (i.kind === 'preprint' ? ' · preprint' : '') + '</span>' +
-                '<span>' + timeAgo(i.ts) + '</span></div>' +
-                '<div class="bsg-item-title">' + esc(i.title) + '</div>' +
-                (i.snippet ? '<div class="bsg-snip">' + esc(i.snippet) + '</div>' : '') +
+                '<span>' + timeAgo(i.ts) + '</span>' +
+                (state.tl !== 'off' ? '<span class="bsg-mt">machine translation</span>' : '') +
+                '</div>' +
+                '<div class="bsg-item-title"' + (state.tl !== 'off' ? ' title="' + esc(i.title) + '"' : '') + '>' + esc(trText(i.title, state.tl)) + '</div>' +
+                (i.snippet ? '<div class="bsg-snip">' + esc(trText(i.snippet, state.tl)) + '</div>' : '') +
                 '<div class="bsg-tags">' + tags + '</div></a>';
         }).join('');
         if (items.length > state.shown) {
@@ -771,6 +887,13 @@ function buildChips() {
         c.innerHTML = esc(t.label) + ' <span class="bsg-n"></span>';
         $topics.appendChild(c);
     });
+    // an explicit All chip: without one the only way back from a single
+    // language was to untick it again
+    const allLang = document.createElement('button');
+    allLang.className = 'bsg-chip' + (state.langs.size ? '' : ' on');
+    allLang.dataset.lang = 'all';
+    allLang.innerHTML = 'All languages <span class="bsg-n"></span>';
+    $langs.appendChild(allLang);
     Object.keys(state.languages).sort((a, b) => langName(a).localeCompare(langName(b))).forEach(code => {
         const c = document.createElement('button');
         c.className = 'bsg-chip' + (state.langs.has(code) ? ' on' : '');
@@ -790,9 +913,10 @@ function chipCounts() {
         chip.classList.toggle('empty', n === 0 && id !== 'all');
     });
     $langs.querySelectorAll('.bsg-chip').forEach(chip => {
-        const n = base.filter(i => i.lang === chip.dataset.lang).length;
+        const code = chip.dataset.lang;
+        const n = code === 'all' ? base.length : base.filter(i => i.lang === code).length;
         chip.querySelector('.bsg-n').textContent = n;
-        chip.classList.toggle('empty', n === 0);
+        chip.classList.toggle('empty', n === 0 && code !== 'all');
     });
 }
 
@@ -832,8 +956,16 @@ $topics.addEventListener('click', e => {
 $langs.addEventListener('click', e => {
     const chip = e.target.closest('.bsg-chip'); if (!chip) return;
     const code = chip.dataset.lang;
-    if (state.langs.has(code)) state.langs.delete(code); else state.langs.add(code);
-    chip.classList.toggle('on', state.langs.has(code));
+    if (code === 'all') {
+        state.langs.clear();
+    } else if (state.langs.has(code)) {
+        state.langs.delete(code);
+    } else {
+        state.langs.add(code);
+    }
+    // All is lit exactly when no single language is picked
+    $langs.querySelectorAll('.bsg-chip').forEach(x => x.classList.toggle('on',
+        x.dataset.lang === 'all' ? !state.langs.size : state.langs.has(x.dataset.lang)));
     state.shown = 40; render();
 });
 $refresh.addEventListener('click', load);
@@ -863,7 +995,7 @@ document.addEventListener('keydown', e => {
 document.getElementById('bsgClear').addEventListener('click', () => {
     state.topic = 'all'; state.langs.clear(); state.query = ''; state.shown = 40; $search.value = '';
     $topics.querySelectorAll('.bsg-chip').forEach(c => c.classList.toggle('on', c.dataset.topic === 'all'));
-    $langs.querySelectorAll('.bsg-chip').forEach(c => c.classList.remove('on'));
+    $langs.querySelectorAll('.bsg-chip').forEach(c => c.classList.toggle('on', c.dataset.lang === 'all'));
     render();
 });
 let timer;
@@ -873,6 +1005,28 @@ $search.addEventListener('input', e => {
 });
 
 select('enceladus');
+
+/* translation control */
+(function () {
+    const sel = document.getElementById('bsgTr');
+    if (!sel) return;
+    TR_LANGS.forEach(pair => {
+        const o = document.createElement('option');
+        o.value = pair[0]; o.textContent = pair[1];
+        sel.appendChild(o);
+    });
+    sel.value = 'off';
+    sel.addEventListener('change', () => {
+        state.tl = sel.value;
+        state.shown = 40;
+        render();
+        if (state.tl === 'off') { refreshStatus(); return; }
+        const onscreen = visible().slice(0, state.shown);
+        setStatus('Translating ' + onscreen.length + ' headlines…', '');
+        trFill(onscreen, state.tl, () => { render(); refreshStatus(); });
+    });
+})();
+
 load();
 setInterval(() => { if (!document.hidden) load(); }, 15 * 60 * 1000);
 })();
