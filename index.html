@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biosignature Evidence Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html, body { margin: 0; padding: 0; height: 100%; }
+
+        .biosig-wrapper {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #ffffff; color: #1f2733; line-height: 1.45;
+            width: 100%; max-width: 1400px; margin: 0 auto; box-sizing: border-box;
+            position: relative; display: flex; flex-direction: column;
+            contain: layout style;
+        }
+        .biosig-wrapper * { box-sizing: border-box; }
+
+        .biosig-container {
+            display: flex; flex-direction: column;
+            padding: 0.7rem 1.1rem 0.55rem; background: #ffffff;
+        }
+
+        /* ---------- Header ---------- */
+        .biosig-header {
+            flex: 0 0 auto; display: flex; align-items: baseline; justify-content: space-between;
+            gap: 1rem; flex-wrap: wrap; margin-bottom: 0.6rem; padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e5ea;
+        }
+        .biosig-header-left { min-width: 220px; }
+        .biosig-header h1 { font-size: clamp(1.15rem, 2.4vw, 1.55rem); font-weight: 600; letter-spacing: -0.02em; margin: 0; color: #111827; }
+        .biosig-subtitle { font-size: 0.66rem; color: #6b7280; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin: 0.1rem 0 0; }
+        .biosig-disclaimer { font-size: 0.68rem; color: #6b7280; max-width: 560px; margin: 0; line-height: 1.35; text-align: right; }
+        .biosig-hint { font-size: 0.62rem; color: #9aa0a6; margin-top: 0.2rem; text-align: right; }
+
+        /* ---------- Main: map + info column (fills remaining height) ---------- */
+        .biosig-main {
+            display: block;
+        }
+
+        .biosig-space-map {
+            position: relative; width: 100%; height: 160px;
+            background: #f9fafb; border: 1px solid #e2e5ea; border-radius: 8px;
+        }
+        .biosig-map-caption { position: absolute; top: 7px; left: 11px; font-size: 0.62rem; color: #9aa0a6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+        .biosig-distance-axis { position: absolute; bottom: 20px; left: 5%; width: 90%; height: 1px; background: linear-gradient(90deg, transparent, #d1d5db, transparent); }
+        .biosig-axis-tick { position: absolute; bottom: -15px; transform: translateX(-50%); font-size: 0.6rem; color: #9aa0a6; white-space: nowrap; }
+        .biosig-axis-tick::before { content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 1px; height: 6px; background: #d1d5db; }
+        .biosig-axis-end { position: absolute; top: 7px; font-size: 0.6rem; color: #9aa0a6; text-transform: uppercase; font-weight: 500; }
+
+        .biosig-celestial-body { position: absolute; cursor: pointer; transition: transform 0.2s ease; z-index: 2; }
+        .biosig-celestial-body:hover { transform: scale(1.15); }
+        .biosig-celestial-body:focus-visible { outline: 2px solid #1f2733; outline-offset: 6px; border-radius: 50%; }
+        .biosig-body-marker { width: 34px; height: 34px; border-radius: 50%; position: relative; border: 2px solid currentColor; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), currentColor); }
+        .biosig-body-marker::after { content: ''; position: absolute; inset: -7px; border: 1px solid currentColor; border-radius: 50%; opacity: 0.35; }
+        .biosig-body-label { position: absolute; top: 42px; left: 50%; transform: translateX(-50%); font-size: 0.68rem; font-weight: 600; white-space: nowrap; color: currentColor; }
+        .biosig-body-count { position: absolute; top: -6px; right: -12px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: #ffffff; border: 1px solid currentColor; color: currentColor; font-size: 0.56rem; font-weight: 600; line-height: 15px; text-align: center; opacity: 0; transition: opacity 0.2s ease; }
+        .biosig-body-count.visible { opacity: 1; }
+        .biosig-mars      { top: 30%; left: 14%; color: #c8362b; }
+        .biosig-europa    { top: 12%; left: 35%; color: #c9741f; }
+        .biosig-enceladus { top: 30%; left: 53%; color: #a8851a; }
+        .biosig-k2-18b    { top: 12%; right: 11%; color: #0288c9; }
+
+        .biosig-popup {
+            position: absolute; background: #ffffff; border: 1px solid; border-radius: 8px;
+            padding: 0.8rem 0.95rem; width: 330px; max-width: 90vw;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+            box-shadow: 0 12px 40px rgba(17,24,39,0.16); z-index: 5;
+        }
+        .biosig-popup.active { opacity: 1; pointer-events: auto; }
+        .biosig-popup-header { font-size: 1.02rem; font-weight: 600; margin-bottom: 0.1rem; letter-spacing: -0.01em; }
+        .biosig-popup-distance { font-size: 0.71rem; color: #6b7280; margin-bottom: 0.5rem; }
+
+        .biosig-probability-container { display: flex; align-items: center; gap: 0.7rem; background: #f9fafb; border: 1px solid #e2e5ea; border-radius: 6px; padding: 0.5rem 0.7rem; margin: 0.45rem 0; }
+        .biosig-prob-left { flex: 0 0 auto; text-align: center; }
+        .biosig-probability-label { font-size: 0.57rem; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; margin-bottom: 0.1rem; font-weight: 500; }
+        .biosig-probability-value { font-size: 1.45rem; font-weight: 600; color: currentColor; line-height: 1; }
+        .biosig-prob-right { flex: 1 1 auto; }
+        .biosig-probability-bar { height: 6px; background: #eef0f3; border-radius: 3px; overflow: hidden; margin-bottom: 0.3rem; }
+        .biosig-probability-fill { height: 100%; background: currentColor; border-radius: 3px; }
+        .biosig-probability-note { font-size: 0.65rem; color: #6b7280; line-height: 1.3; }
+
+        .biosig-popup-section { margin: 0.45rem 0 0; }
+        .biosig-popup-label { font-size: 0.57rem; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; margin-bottom: 0.12rem; font-weight: 500; }
+        .biosig-popup-content { font-size: 0.73rem; line-height: 1.4; color: #1f2733; }
+        .biosig-mission-block { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #e2e5ea; }
+        .biosig-mission-block .biosig-popup-content strong { color: currentColor; }
+
+        .biosig-status-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.59rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.4rem; }
+        .biosig-status-controversial { background: rgba(200,54,43,0.08);  border: 1px solid #c8362b; color: #c8362b; }
+        .biosig-status-strongest     { background: rgba(168,133,26,0.08); border: 1px solid #a8851a; color: #a8851a; }
+        .biosig-status-target        { background: rgba(2,136,201,0.08);  border: 1px solid #0288c9; color: #0288c9; }
+
+        .biosig-popup-feedlink { display: inline-block; margin-top: 0.5rem; font-size: 0.63rem; font-weight: 500; color: #6b7280; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; font-family: inherit; }
+        .biosig-popup-feedlink:hover { color: #1f2733; }
+
+        /* ---------- Info column ---------- */
+        .biosig-info-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-top: 0.6rem; }
+        .biosig-info-card { background: #f9fafb; border: 1px solid #e2e5ea; border-radius: 8px; padding: 0.6rem 0.75rem; }
+        .biosig-info-title { font-size: 0.79rem; font-weight: 600; margin-bottom: 0.25rem; letter-spacing: -0.01em; color: #111827; }
+        .biosig-info-text { font-size: 0.69rem; line-height: 1.4; color: #6b7280; }
+
+        /* ---------- Live feed ---------- */
+        .biosig-feed { margin-top: 0.85rem; border: 1px solid #e2e5ea; border-radius: 8px; background: #ffffff; overflow: hidden; }
+        .biosig-feed-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.8rem; flex-wrap: wrap; padding: 0.6rem 0.8rem 0.55rem; border-bottom: 1px solid #e2e5ea; background: #f9fafb; }
+        .biosig-feed-title { font-size: 0.86rem; font-weight: 600; color: #111827; letter-spacing: -0.01em; display: flex; align-items: center; gap: 0.4rem; margin: 0; }
+        .biosig-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.14); animation: biosig-pulse 2.4s ease-in-out infinite; }
+        .biosig-live-dot.idle { background: #9aa0a6; box-shadow: 0 0 0 3px rgba(154,160,166,0.14); animation: none; }
+        .biosig-live-dot.error { background: #c8362b; box-shadow: 0 0 0 3px rgba(200,54,43,0.14); animation: none; }
+        @keyframes biosig-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+        @media (prefers-reduced-motion: reduce) { .biosig-live-dot { animation: none; } .biosig-celestial-body { transition: none; } }
+        .biosig-feed-sub { font-size: 0.65rem; color: #6b7280; margin: 0.15rem 0 0; line-height: 1.35; }
+        .biosig-feed-actions { display: flex; align-items: center; gap: 0.45rem; }
+        .biosig-btn { font-family: inherit; font-size: 0.63rem; font-weight: 500; color: #1f2733; background: #ffffff; border: 1px solid #d1d5db; border-radius: 5px; padding: 0.3rem 0.6rem; cursor: pointer; letter-spacing: 0.2px; }
+        .biosig-btn:hover { border-color: #9aa0a6; }
+        .biosig-btn:disabled { opacity: 0.5; cursor: default; }
+        .biosig-btn:focus-visible { outline: 2px solid #1f2733; outline-offset: 2px; }
+        .biosig-progress { height: 2px; background: #eef0f3; }
+        .biosig-progress-fill { height: 100%; width: 0%; background: #0288c9; transition: width 0.3s ease; }
+
+        .biosig-filters { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.55rem 0.8rem; border-bottom: 1px solid #e2e5ea; }
+        .biosig-filter-row { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+        .biosig-filter-key { font-size: 0.57rem; text-transform: uppercase; letter-spacing: 0.5px; color: #9aa0a6; font-weight: 500; margin-right: 0.15rem; }
+        .biosig-chip { font-family: inherit; font-size: 0.63rem; font-weight: 500; color: #6b7280; background: #ffffff; border: 1px solid #e2e5ea; border-radius: 20px; padding: 0.2rem 0.55rem; cursor: pointer; white-space: nowrap; }
+        .biosig-chip:hover { border-color: #9aa0a6; color: #1f2733; }
+        .biosig-chip.on { color: #ffffff; background: #1f2733; border-color: #1f2733; }
+        .biosig-chip[data-color].on { background: var(--chipcolor); border-color: var(--chipcolor); }
+        .biosig-chip .biosig-chip-n { opacity: 0.65; margin-left: 0.25rem; font-variant-numeric: tabular-nums; }
+        .biosig-chip.empty { opacity: 0.45; }
+        .biosig-chip:focus-visible { outline: 2px solid #1f2733; outline-offset: 2px; }
+        .biosig-search { flex: 1 1 160px; min-width: 130px; font-family: inherit; font-size: 0.68rem; color: #1f2733; border: 1px solid #e2e5ea; border-radius: 5px; padding: 0.28rem 0.5rem; background: #ffffff; }
+        .biosig-search:focus { outline: none; border-color: #9aa0a6; }
+
+        .biosig-feed-list { max-height: 460px; overflow-y: auto; }
+        .biosig-item { display: block; padding: 0.55rem 0.8rem; border-bottom: 1px solid #f1f3f5; text-decoration: none; color: inherit; }
+        .biosig-item:last-child { border-bottom: 0; }
+        .biosig-item:hover { background: #f9fafb; }
+        .biosig-item:focus-visible { outline: 2px solid #1f2733; outline-offset: -2px; }
+        .biosig-item-meta { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; font-size: 0.59rem; color: #9aa0a6; margin-bottom: 0.15rem; }
+        .biosig-lang-badge { font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #6b7280; background: #f1f3f5; border-radius: 3px; padding: 0.06rem 0.28rem; }
+        .biosig-item-source { color: #6b7280; font-weight: 500; }
+        .biosig-item-title { font-size: 0.76rem; font-weight: 600; line-height: 1.35; color: #111827; letter-spacing: -0.01em; }
+        .biosig-item:hover .biosig-item-title { color: #0288c9; }
+        .biosig-item-snippet { font-size: 0.67rem; line-height: 1.4; color: #6b7280; margin-top: 0.15rem; }
+        .biosig-tags { display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.28rem; }
+        .biosig-tag { font-size: 0.55rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 3px; padding: 0.08rem 0.3rem; border: 1px solid; }
+
+        .biosig-feed-state { padding: 1.1rem 0.9rem; text-align: center; font-size: 0.7rem; color: #6b7280; line-height: 1.5; }
+        .biosig-feed-state strong { color: #1f2733; font-weight: 600; }
+        .biosig-more { width: 100%; border: 0; border-top: 1px solid #e2e5ea; background: #f9fafb; font-family: inherit; font-size: 0.65rem; font-weight: 500; color: #6b7280; padding: 0.45rem; cursor: pointer; }
+        .biosig-more:hover { color: #1f2733; }
+
+        .biosig-coverage { border-top: 1px solid #e2e5ea; background: #f9fafb; }
+        .biosig-coverage summary { cursor: pointer; font-size: 0.63rem; font-weight: 500; color: #6b7280; padding: 0.42rem 0.8rem; list-style: none; }
+        .biosig-coverage summary::-webkit-details-marker { display: none; }
+        .biosig-coverage summary::before { content: '▸ '; color: #9aa0a6; }
+        .biosig-coverage[open] summary::before { content: '▾ '; }
+        .biosig-coverage summary:hover { color: #1f2733; }
+        .biosig-coverage-body { padding: 0 0.8rem 0.6rem; }
+        .biosig-cov-note { font-size: 0.63rem; color: #6b7280; line-height: 1.4; margin: 0 0 0.4rem; }
+        .biosig-source-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.15rem 0.7rem; }
+        .biosig-source-row { display: flex; justify-content: space-between; gap: 0.4rem; font-size: 0.62rem; color: #6b7280; padding: 0.1rem 0; border-bottom: 1px dotted #e2e5ea; }
+        .biosig-source-row .biosig-src-n { font-variant-numeric: tabular-nums; font-weight: 500; }
+        .biosig-source-row.fail .biosig-src-n { color: #c8362b; }
+        .biosig-source-row.ok .biosig-src-n { color: #1f2733; }
+
+        /* ---------- Footer ---------- */
+        .biosig-footer { flex: 0 0 auto; text-align: center; padding-top: 0.45rem; margin-top: 0.55rem; border-top: 1px solid #e2e5ea; color: #9aa0a6; font-size: 0.64rem; line-height: 1.35; }
+
+        @media (max-width: 860px) {
+            .biosig-space-map { height: 180px; }
+            .biosig-info-col { grid-template-columns: 1fr; }
+            .biosig-disclaimer, .biosig-hint { text-align: left; }
+            .biosig-popup { width: calc(100vw - 2rem); max-width: 330px; }
+            .biosig-feed-list { max-height: 380px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="biosig-wrapper">
+        <div class="biosig-container">
+            <header class="biosig-header">
+                <div class="biosig-header-left">
+                    <h1>Biosignature Evidence Assessment</h1>
+                    <p class="biosig-subtitle">Scientific Analysis • December 2025</p>
+                </div>
+                <div>
+                    <p class="biosig-disclaimer">
+                        Probability estimates based on peer-reviewed research, NASA/ESA mission data, and scientific
+                        consensus. No confirmed extraterrestrial life has been discovered. Percentages represent current
+                        assessments of biosignature authenticity.
+                    </p>
+                    <p class="biosig-hint">Hover or tap a body for evidence, status, probability &amp; upcoming mission.</p>
+                </div>
+            </header>
+
+            <div class="biosig-main">
+                <div class="biosig-space-map" id="biosigSpaceMap">
+                    <div class="biosig-map-caption">Logarithmic distance from Earth</div>
+                    <div class="biosig-axis-end" style="left: 11px;">Near</div>
+                    <div class="biosig-axis-end" style="right: 11px;">Far</div>
+
+                    <div class="biosig-distance-axis">
+                        <div class="biosig-axis-tick" style="left: 0%;">0 mi</div>
+                        <div class="biosig-axis-tick" style="left: 22%;">10⁸ mi</div>
+                        <div class="biosig-axis-tick" style="left: 44%;">10⁹ mi</div>
+                        <div class="biosig-axis-tick" style="left: 66%;">10¹² mi</div>
+                        <div class="biosig-axis-tick" style="left: 100%;">10¹⁵⁺ mi</div>
+                    </div>
+
+                    <div class="biosig-celestial-body biosig-mars" data-body="mars" tabindex="0" role="button" aria-label="Mars — Cheyava Falls evidence"><div class="biosig-body-marker"><span class="biosig-body-count" data-count="mars">0</span></div><div class="biosig-body-label">Mars</div></div>
+                    <div class="biosig-celestial-body biosig-europa" data-body="europa" tabindex="0" role="button" aria-label="Europa evidence"><div class="biosig-body-marker"><span class="biosig-body-count" data-count="europa">0</span></div><div class="biosig-body-label">Europa</div></div>
+                    <div class="biosig-celestial-body biosig-enceladus" data-body="enceladus" tabindex="0" role="button" aria-label="Enceladus evidence"><div class="biosig-body-marker"><span class="biosig-body-count" data-count="enceladus">0</span></div><div class="biosig-body-label">Enceladus</div></div>
+                    <div class="biosig-celestial-body biosig-k2-18b" data-body="k2-18b" tabindex="0" role="button" aria-label="K2-18 b evidence"><div class="biosig-body-marker"><span class="biosig-body-count" data-count="k2-18b">0</span></div><div class="biosig-body-label">K2-18 b</div></div>
+
+                    <div class="biosig-popup" id="biosig-popup-k2-18b" style="border-color: #0288c9;">
+                        <div class="biosig-popup-header" style="color: #0288c9;">K2-18 b</div>
+                        <div class="biosig-popup-distance">730 trillion miles (124 light-years) • Leo constellation</div>
+                        <div class="biosig-probability-container" style="border-color: #0288c9;">
+                            <div class="biosig-prob-left"><div class="biosig-probability-label">P(life)</div><div class="biosig-probability-value" style="color: #0288c9;">&lt;1%</div></div>
+                            <div class="biosig-prob-right"><div class="biosig-probability-bar"><div class="biosig-probability-fill" style="width: 1%; background: #0288c9;"></div></div><div class="biosig-probability-note">Extremely low • Requires confirmation</div></div>
+                        </div>
+                        <div class="biosig-popup-section"><div class="biosig-popup-label">Evidence</div><div class="biosig-popup-content">Tentative dimethyl sulfide (DMS) detection at 3-sigma confidence. On Earth, DMS is produced almost exclusively by marine phytoplankton.</div></div>
+                        <div class="biosig-popup-section"><div class="biosig-popup-label">Status</div><div class="biosig-popup-content">July 2025 NASA reanalysis found no conclusive evidence. Signal below 5-sigma threshold required for confirmation. Alternative explanations include gas-rich mini-Neptune with no habitable surface.</div><span class="biosig-status-badge biosig-status-controversial">Highly Controversial</span></div>
+                        <div class="biosig-mission-block" style="color: #0288c9;"><div class="biosig-popup-label" style="color:#0288c9;">Upcoming Mission</div><div class="biosig-popup-content"><strong>JWST K2-18 b Observations</strong><br>2026 • Ongoing<br>16-24 hours of additional JWST observations scheduled. Goal: Achieve 5-sigma confidence level for DMS detection. ESA's Ariel mission (launch 2029) will provide comparative exoplanet data.</div></div>
+                        <button class="biosig-popup-feedlink" data-feedfilter="k2-18b">Show K2-18 b in the news feed</button>
+                    </div>
+
+                    <div class="biosig-popup" id="biosig-popup-mars" style="border-color: #c8362b;">
+                        <div class="biosig-popup-header" style="color: #c8362b;">Mars - Cheyava Falls</div>
+                        <div class="biosig-popup-distance">140 million miles • Jezero Crater</div>
+                        <div class="biosig-probability-container" style="border-color: #c8362b;">
+                            <div class="biosig-prob-left"><div class="biosig-probability-label">P(life)</div><div class="biosig-probability-value" style="color: #c8362b;">3-8%</div></div>
+                            <div class="biosig-prob-right"><div class="biosig-probability-bar"><div class="biosig-probability-fill" style="width: 6%; background: #c8362b;"></div></div><div class="biosig-probability-note">Strongest evidence to date • Sample return only confirmation possible</div></div>
+                        </div>
+                        <div class="biosig-popup-section"><div class="biosig-popup-label">Evidence</div><div class="biosig-popup-content">"Leopard spots" containing vivianite and greigite minerals with organic molecules. These patterns are associated with ancient microbial activity on Earth.</div></div>
+                        <div class="biosig-popup-section"><div class="biosig-popup-label">Status</div><div class="biosig-popup-content">Peer-reviewed in Nature (September 2025). Rock aged 2-3 billion years. Sample return only definitive confirmation possible. Non-biological processes cannot be ruled out.</div><span class="biosig-status-badge biosig-status-strongest">Strongest Candidate</span></div>
+                        <div class="biosig-mission-block" style="color: #c8362b;"><div class="biosig-popup-label" style="color:#c8362b;">Upcoming Mission</div><div class="biosig-popup-content"><strong>Mars Sample Return</strong><br>2030-2039<br>Earth Return Orbiter launch: ~2030. Sample Retrieval Lander launch: ~2031. Sample arrival on Earth: 2035-2039. Mission architecture under review until mid-2026. China's Tianwen-3 may return samples by 2031.</div></div>
+                        <button class="biosig-popup-feedlink" data-feedfilter="mars">Show Mars in the news feed</button>
+                    </div>
+
+                    <div class="biosig-popup" id="biosig-popup-europa" style="border-color: #c9741f;">
+                        <div class="biosig-popup-header" style="color: #c9741f;">Europa</div>
+                        <div class="biosig-popup-distance">390 million miles • Jupiter's Moon</div>
+                        <div class="biosig-probability-container" style="border-color: #c9741f;">
+                            <div class="biosig-prob-left"><div class="biosig-probability-label">P(life)</div><div class="biosig-probability-value" style="color: #c9741f;">5-15%</div></div>
+                            <div class="biosig-prob-right"><div class="biosig-probability-bar"><div class="biosig-probability-fill" style="width: 10%; background: #c9741f;"></div></div><div class="biosig-probability-note">High habitability • No biosignatures yet</div></div>
+                        </div>
+                        <div class="biosig-popup-section"><div class="biosig-popup-label">Evidence</div><div class="biosig-popup-content">Subsurface liquid ocean beneath 15-25 km ice shell. Contains organic molecules, energy sources, and all ingredients necessary for life.</div></div>
+                        <div class="biosig-popup-section"><div class="biosig-popup-label">Status</div><div class="biosig-popup-content">Highest planetary habitability score in solar system. Ocean likely in contact with rocky seafloor, enabling hydrothermal activity. No direct biosignatures detected.</div><span class="biosig-status-badge biosig-status-target">Prime Target</span></div>
+                        <div class="biosig-mission-block" style="color: #c9741f;"><div class="biosig-popup-label" style="color:#c9741f;">Upcoming Mission</div><div class="biosig-popup-content"><strong>Europa Clipper Mission</strong><br>Arrives 2030<br>Already launched (October 2024). Will conduct 50+ close flybys of Europa to investigate ocean habitability and potential biosignatures beneath ice shell.</div></div>
+                        <button class="biosig-popup-feedlink" data-feedfilter="europa">Show Europa in the news feed</button>
+                    </div>
+
+                    <div class="biosig-popup" id="biosig-popup-enceladus" style="border-color: #a8851a;">
+                        <div class="biosig-popup-header" style="color: #a8851a;">Enceladus</div>
+                        <div class="biosig-popup-distance">790 million miles • Saturn's Moon</div>
+                        <div class="biosig-probability-container" style="border-color: #a8851a;">
+                            <div class="biosig-prob-left"><div class="biosig-probability-label">P(life)</div><div class="biosig-probability-value" style="color: #a8851a;">10-20%</div></div>
+                            <div class="biosig-prob-right"><div class="biosig-probability-bar"><div class="biosig-probability-fill" style="width: 15%; background: #a8851a;"></div></div><div class="biosig-probability-note">Best conditions for extant life in solar system</div></div>
+                        </div>
+                        <div class="biosig-popup-section"><div class="biosig-popup-label">Evidence</div><div class="biosig-popup-content">Active cryovolcanic plumes ejecting ocean material into space. October 2025: Complex organics detected including aromatic compounds, amino acids, and phosphorus.</div></div>
+                        <div class="biosig-popup-section"><div class="biosig-popup-label">Status</div><div class="biosig-popup-content">"All conditions at the same place at the same time for life to evolve and thrive" - Caroline Freissinet, NASA astrobiologist. Evidence of hydrothermal activity. Direct ocean sampling via plumes.</div><span class="biosig-status-badge biosig-status-target">Prime Target</span></div>
+                        <div class="biosig-mission-block" style="color: #a8851a;"><div class="biosig-popup-label" style="color:#a8851a;">Upcoming Mission</div><div class="biosig-popup-content"><strong>Enceladus Orbilander</strong><br>Launch Late 2038 • Land Early 2050s<br>Proposed NASA Flagship mission ($4.9B). Project start FY2029. 7.5-year cruise + 4.5-year Saturn tour. 1.5 years orbiting Enceladus, then 2-year surface mission to search for biosignatures.</div></div>
+                        <button class="biosig-popup-feedlink" data-feedfilter="enceladus">Show Enceladus in the news feed</button>
+                    </div>
+                </div>
+
+                <div class="biosig-info-col">
+                    <div class="biosig-info-card">
+                        <div class="biosig-info-title">Scientific Methodology</div>
+                        <div class="biosig-info-text">Probability estimates derived from peer-reviewed publications, NASA/ESA mission data, expert consensus, biosignature detection confidence levels, and habitability assessments. Scientists require 5-sigma confidence (99.99997% certainty) for definitive claims.</div>
+                    </div>
+                    <div class="biosig-info-card">
+                        <div class="biosig-info-title">Conservative Standards</div>
+                        <div class="biosig-info-text">Multiple independent confirmations required. All abiotic explanations must be ruled out. Many promising signals have been later explained by non-biological chemistry. Current biosignatures remain inconclusive.</div>
+                    </div>
+                    <div class="biosig-info-card">
+                        <div class="biosig-info-title">Detection Timeline</div>
+                        <div class="biosig-info-text">First definitive detection of extraterrestrial life could occur within 10-20 years through Mars sample return, direct ocean sampling at Enceladus, or Europa Clipper findings. Technological capabilities are advancing rapidly.</div>
+                    </div>
+                </div>
+
+                <!-- ---------- Live news feed ---------- -->
+                <section class="biosig-feed" id="biosigFeed" aria-label="Live biosignature news feed">
+                    <div class="biosig-feed-head">
+                        <div>
+                            <h2 class="biosig-feed-title"><span class="biosig-live-dot idle" id="biosigDot"></span> Live coverage</h2>
+                            <p class="biosig-feed-sub" id="biosigStatus">Loading the wire…</p>
+                        </div>
+                        <div class="biosig-feed-actions">
+                            <button class="biosig-btn" id="biosigRefresh">Refresh</button>
+                        </div>
+                    </div>
+                    <div class="biosig-progress"><div class="biosig-progress-fill" id="biosigProgress"></div></div>
+
+                    <div class="biosig-filters">
+                        <div class="biosig-filter-row" id="biosigTopicChips"><span class="biosig-filter-key">Subject</span></div>
+                        <div class="biosig-filter-row">
+                            <span class="biosig-filter-key">Language</span>
+                            <div class="biosig-filter-row" id="biosigLangChips" style="gap:0.3rem;"></div>
+                        </div>
+                        <div class="biosig-filter-row">
+                            <span class="biosig-filter-key">Find</span>
+                            <input class="biosig-search" id="biosigSearch" type="search" placeholder="Filter headlines — plume, DMS, Perseverance…" aria-label="Filter headlines">
+                            <button class="biosig-btn" id="biosigClear">Clear filters</button>
+                        </div>
+                    </div>
+
+                    <div class="biosig-feed-list" id="biosigList">
+                        <div class="biosig-feed-state">Loading the wire…</div>
+                    </div>
+                    <button class="biosig-more" id="biosigMore" style="display:none;">Show more stories</button>
+
+                    <details class="biosig-coverage">
+                        <summary>Sources and coverage</summary>
+                        <div class="biosig-coverage-body">
+                            <p class="biosig-cov-note">
+                                Stories are collected every two hours by a harvester in
+                                <a href="https://github.com/WelcomeToYourGalaxy/space-life-news" target="_blank" rel="noopener noreferrer">github.com/WelcomeToYourGalaxy/space-life-news</a>,
+                                which reads institutional newsrooms (NASA, JPL, ESA, CNES, DLR, JAXA, SETI Institute),
+                                science desks, the arXiv preprint server, and Google News regional editions in
+                                <span id="biosigLangCount">many</span> languages across
+                                <span id="biosigRegionCount">ten</span> world regions. This page reads the resulting
+                                wire file directly. Nothing is written or summarised here: headlines and snippets are
+                                the publishers' own and each row links to the original. A wire that returns zero is
+                                shown as zero rather than hidden — coverage is uneven by language, and the counts say where.
+                            </p>
+                            <div class="biosig-source-grid" id="biosigSourceGrid"></div>
+                        </div>
+                    </details>
+                </section>
+            </div>
+
+            <footer class="biosig-footer">
+                Data compiled from NASA, ESA, Nature, The Astrophysical Journal, and peer-reviewed astrobiology research • Probability estimates are scientific assessments based on current evidence and do not represent certainty
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        /* ============================================================
+           Popups on the distance map
+           ============================================================ */
+        (function() {
+            const bodies = document.querySelectorAll('.biosig-celestial-body');
+            const spaceMap = document.getElementById('biosigSpaceMap');
+            let activePopup = null;
+            let pinned = null;
+
+            function place(bodyEl) {
+                const popup = document.getElementById('biosig-popup-' + bodyEl.dataset.body);
+                if (activePopup && activePopup !== popup) activePopup.classList.remove('active');
+
+                const rect = bodyEl.getBoundingClientRect();
+                const mapRect = spaceMap.getBoundingClientRect();
+                let left = rect.right - mapRect.left + 14;
+                let top = rect.top - mapRect.top - 40;
+
+                if (left + 330 > mapRect.width) left = rect.left - mapRect.left - 344;
+                if (left < 6) left = 6;
+                if (top < 6) top = 6;
+
+                popup.style.left = left + 'px';
+                popup.style.top = top + 'px';
+                popup.classList.add('active');
+                activePopup = popup;
+
+                const pr = popup.getBoundingClientRect();
+                const vh = window.innerHeight;
+                if (pr.bottom > vh - 8) {
+                    const shift = pr.bottom - (vh - 8);
+                    popup.style.top = Math.max(-mapRect.top + 8, top - shift) + 'px';
+                }
+                return popup;
+            }
+
+            bodies.forEach(body => {
+                body.addEventListener('mouseenter', function() { place(this); });
+                body.addEventListener('focus', function() { place(this); });
+
+                body.addEventListener('click', function(e) {
+                    if (e.target.closest('.biosig-popup')) return;
+                    const popup = place(this);
+                    pinned = (pinned === popup) ? null : popup;
+                });
+
+                body.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+                    if (e.key === 'Escape') { const p = document.getElementById('biosig-popup-' + this.dataset.body); p.classList.remove('active'); pinned = null; }
+                });
+
+                body.addEventListener('mouseleave', function() {
+                    setTimeout(() => {
+                        const popup = document.getElementById('biosig-popup-' + this.dataset.body);
+                        if (popup === pinned) return;
+                        if (!popup.matches(':hover') && !this.matches(':hover')) {
+                            popup.classList.remove('active');
+                            if (activePopup === popup) activePopup = null;
+                        }
+                    }, 100);
+                });
+            });
+
+            document.querySelectorAll('.biosig-popup').forEach(popup => {
+                popup.addEventListener('mouseenter', function() { this.classList.add('active'); });
+                popup.addEventListener('mouseleave', function() {
+                    if (this === pinned) return;
+                    this.classList.remove('active'); activePopup = null;
+                });
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.biosig-celestial-body') && !e.target.closest('.biosig-popup')) {
+                    document.querySelectorAll('.biosig-popup').forEach(p => p.classList.remove('active'));
+                    activePopup = null; pinned = null;
+                }
+            });
+        })();
+
+        /* ============================================================
+           Live news feed — reads wire.json from
+           github.com/WelcomeToYourGalaxy/space-life-news
+           ============================================================ */
+        (function() {
+            'use strict';
+
+            const REPO = 'WelcomeToYourGalaxy/space-life-news';
+            const BRANCH = 'main';
+            const ENDPOINTS = [
+                () => 'https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/wire.json?t=' + Date.now(),
+                () => 'https://cdn.jsdelivr.net/gh/' + REPO + '@' + BRANCH + '/wire.json'
+            ];
+
+            /* Subject colours. Ids match the topic ids the harvester writes. */
+            const TOPIC_COLOR = {
+                'mars': '#c8362b', 'europa': '#c9741f', 'enceladus': '#a8851a', 'k2-18b': '#0288c9',
+                'titan': '#6b7280', 'venus': '#6b7280', 'exoplanet': '#6b7280',
+                'seti': '#6b7280', 'method': '#6b7280'
+            };
+
+            const state = {
+                items: [], topics: [], languages: {}, sources: [], generated: null,
+                topic: 'all', langs: new Set(), query: '', shown: 40, loading: false
+            };
+
+            const $list = document.getElementById('biosigList');
+            const $status = document.getElementById('biosigStatus');
+            const $dot = document.getElementById('biosigDot');
+            const $progress = document.getElementById('biosigProgress');
+            const $more = document.getElementById('biosigMore');
+            const $topicChips = document.getElementById('biosigTopicChips');
+            const $langChips = document.getElementById('biosigLangChips');
+            const $search = document.getElementById('biosigSearch');
+            const $srcGrid = document.getElementById('biosigSourceGrid');
+            const $refresh = document.getElementById('biosigRefresh');
+
+            function esc(s) {
+                return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            }
+
+            function timeAgo(ts) {
+                if (!ts) return 'undated';
+                const mins = Math.round((Date.now() - ts) / 60000);
+                if (mins < 1) return 'just now';
+                if (mins < 60) return mins + 'm ago';
+                const hrs = Math.round(mins / 60);
+                if (hrs < 24) return hrs + 'h ago';
+                const days = Math.round(hrs / 24);
+                if (days < 30) return days + 'd ago';
+                return new Date(ts).toISOString().slice(0, 10);
+            }
+
+            function langName(code) { return state.languages[code] || code; }
+            function topicLabel(id) {
+                const t = state.topics.find(t => t.id === id);
+                return t ? t.label : id;
+            }
+
+            /* ---- Load ---- */
+            async function load() {
+                if (state.loading) return;
+                state.loading = true;
+                $refresh.disabled = true;
+                $progress.style.width = '35%';
+                setStatus('Loading the wire…', '');
+
+                let data = null, err = null;
+                for (const endpoint of ENDPOINTS) {
+                    try {
+                        const res = await fetch(endpoint(), { cache: 'no-store' });
+                        if (!res.ok) { err = 'HTTP ' + res.status; continue; }
+                        data = await res.json();
+                        break;
+                    } catch (e) { err = e.message; }
+                }
+                $progress.style.width = '100%';
+
+                if (!data || !Array.isArray(data.items)) {
+                    state.loading = false;
+                    $refresh.disabled = false;
+                    $progress.style.width = '0%';
+                    setStatus('The wire could not be read' + (err ? ' (' + err + ')' : '') + '. Press Refresh.', 'error');
+                    render();
+                    return;
+                }
+
+                state.items = data.items.map(i => ({
+                    title: i.t, link: i.u, outlet: i.o, lang: i.g, region: i.r,
+                    kind: i.k, ts: i.d, snippet: i.s, topics: i.x || ['method'], wire: i.w
+                }));
+                state.topics = data.topics || [];
+                state.languages = data.languages || {};
+                state.sources = data.sources || [];
+                state.generated = data.generated ? Date.parse(data.generated) : null;
+
+                buildChips();
+                renderSourceGrid();
+
+                const counts = data.counts || {};
+                const ageHrs = state.generated ? (Date.now() - state.generated) / 3600000 : null;
+                const stale = ageHrs !== null && ageHrs > 6;
+                setStatus(
+                    (counts.stories || state.items.length) + ' stories · ' +
+                    (counts.languages || new Set(state.items.map(i => i.lang)).size) + ' languages · ' +
+                    (counts.wires_ok || '?') + '/' + (counts.wires_total || '?') + ' wires answered · harvested ' +
+                    (state.generated ? timeAgo(state.generated) : 'unknown'),
+                    stale ? 'idle' : ''
+                );
+
+                state.loading = false;
+                $refresh.disabled = false;
+                setTimeout(() => { $progress.style.width = '0%'; }, 400);
+                render();
+            }
+
+            function setStatus(text, cls) {
+                $status.textContent = text;
+                $dot.className = 'biosig-live-dot' + (cls ? ' ' + cls : '');
+            }
+
+            /* ---- Filtering and rendering ---- */
+            function visibleItems() {
+                const q = state.query.toLowerCase();
+                return state.items.filter(i => {
+                    if (state.topic !== 'all' && i.topics.indexOf(state.topic) === -1) return false;
+                    if (state.langs.size && !state.langs.has(i.lang)) return false;
+                    if (q && (i.title + ' ' + i.snippet + ' ' + i.outlet).toLowerCase().indexOf(q) === -1) return false;
+                    return true;
+                }).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+            }
+
+            function render() {
+                const items = visibleItems();
+                const slice = items.slice(0, state.shown);
+
+                if (!slice.length) {
+                    $list.innerHTML = '<div class="biosig-feed-state">' + (
+                        state.loading ? 'Loading the wire…'
+                            : state.items.length
+                                ? '<strong>Nothing matches these filters.</strong><br>Widen the subject or language, or clear the search box.'
+                                : '<strong>No stories loaded.</strong><br>The wire file has not been read. Press Refresh, or check that the harvester has run in the repository.'
+                    ) + '</div>';
+                    $more.style.display = 'none';
+                } else {
+                    $list.innerHTML = slice.map(i => {
+                        const tags = i.topics.map(id => {
+                            const c = TOPIC_COLOR[id] || '#6b7280';
+                            return '<span class="biosig-tag" style="color:' + c + ';border-color:' + c + ';background:' + c + '14">' + esc(topicLabel(id)) + '</span>';
+                        }).join('');
+                        const kindBadge = i.kind === 'preprint' ? ' · Preprint' : '';
+                        return '<a class="biosig-item" href="' + esc(i.link) + '" target="_blank" rel="noopener noreferrer">' +
+                            '<div class="biosig-item-meta">' +
+                                '<span class="biosig-lang-badge">' + esc(langName(i.lang)) + '</span>' +
+                                '<span class="biosig-item-source">' + esc(i.outlet) + '</span>' +
+                                '<span>' + esc(i.region) + kindBadge + '</span>' +
+                                '<span>' + timeAgo(i.ts) + '</span>' +
+                            '</div>' +
+                            '<div class="biosig-item-title">' + esc(i.title) + '</div>' +
+                            (i.snippet ? '<div class="biosig-item-snippet">' + esc(i.snippet) + '</div>' : '') +
+                            '<div class="biosig-tags">' + tags + '</div>' +
+                        '</a>';
+                    }).join('');
+                    $more.style.display = items.length > state.shown ? 'block' : 'none';
+                    $more.textContent = 'Show more stories (' + (items.length - state.shown) + ' remaining)';
+                }
+
+                renderChipCounts();
+                renderBodyCounts();
+            }
+
+            function buildChips() {
+                $topicChips.querySelectorAll('.biosig-chip').forEach(c => c.remove());
+                $langChips.innerHTML = '';
+
+                const all = document.createElement('button');
+                all.className = 'biosig-chip' + (state.topic === 'all' ? ' on' : '');
+                all.dataset.topic = 'all';
+                all.innerHTML = 'All subjects <span class="biosig-chip-n"></span>';
+                $topicChips.appendChild(all);
+
+                state.topics.forEach(t => {
+                    const c = document.createElement('button');
+                    c.className = 'biosig-chip' + (state.topic === t.id ? ' on' : '');
+                    c.dataset.topic = t.id;
+                    c.dataset.color = '1';
+                    c.style.setProperty('--chipcolor', TOPIC_COLOR[t.id] || '#1f2733');
+                    c.innerHTML = esc(t.label) + ' <span class="biosig-chip-n"></span>';
+                    $topicChips.appendChild(c);
+                });
+
+                const codes = Object.keys(state.languages).sort((a, b) =>
+                    langName(a).localeCompare(langName(b)));
+                codes.forEach(code => {
+                    const c = document.createElement('button');
+                    c.className = 'biosig-chip' + (state.langs.has(code) ? ' on' : '');
+                    c.dataset.lang = code;
+                    c.innerHTML = esc(langName(code)) + ' <span class="biosig-chip-n"></span>';
+                    $langChips.appendChild(c);
+                });
+            }
+
+            function renderChipCounts() {
+                const q = state.query.toLowerCase();
+                const base = state.items.filter(i =>
+                    !q || (i.title + ' ' + i.snippet).toLowerCase().indexOf(q) !== -1);
+                $topicChips.querySelectorAll('.biosig-chip').forEach(chip => {
+                    const id = chip.dataset.topic;
+                    const n = id === 'all' ? base.length : base.filter(i => i.topics.indexOf(id) !== -1).length;
+                    chip.querySelector('.biosig-chip-n').textContent = n;
+                    chip.classList.toggle('empty', n === 0 && id !== 'all');
+                });
+                $langChips.querySelectorAll('.biosig-chip').forEach(chip => {
+                    const n = base.filter(i => i.lang === chip.dataset.lang).length;
+                    chip.querySelector('.biosig-chip-n').textContent = n;
+                    chip.classList.toggle('empty', n === 0);
+                });
+            }
+
+            function renderBodyCounts() {
+                ['mars', 'europa', 'enceladus', 'k2-18b'].forEach(id => {
+                    const el = document.querySelector('[data-count="' + id + '"]');
+                    if (!el) return;
+                    const n = state.items.filter(i => i.topics.indexOf(id) !== -1).length;
+                    el.textContent = n;
+                    el.classList.toggle('visible', n > 0);
+                });
+            }
+
+            function renderSourceGrid() {
+                const lc = document.getElementById('biosigLangCount');
+                const rc = document.getElementById('biosigRegionCount');
+                if (lc) lc.textContent = Object.keys(state.languages).length;
+                if (rc) {
+                    const regions = new Set(state.sources.map(s => s.region)
+                        .filter(r => ['Institutional', 'Science desk', 'Preprints'].indexOf(r) === -1));
+                    rc.textContent = regions.size;
+                }
+                $srcGrid.innerHTML = state.sources.map(s =>
+                    '<div class="biosig-source-row ' + (s.ok ? 'ok' : 'fail') + '">' +
+                        '<span>' + esc(s.name) + '</span>' +
+                        '<span class="biosig-src-n">' + (s.ok ? s.kept + ' kept' : 'unreachable') + '</span>' +
+                    '</div>').join('');
+            }
+
+            /* ---- Wiring ---- */
+            $topicChips.addEventListener('click', e => {
+                const chip = e.target.closest('.biosig-chip');
+                if (!chip) return;
+                state.topic = chip.dataset.topic;
+                state.shown = 40;
+                $topicChips.querySelectorAll('.biosig-chip').forEach(c => c.classList.toggle('on', c === chip));
+                render();
+            });
+            $langChips.addEventListener('click', e => {
+                const chip = e.target.closest('.biosig-chip');
+                if (!chip) return;
+                const code = chip.dataset.lang;
+                if (state.langs.has(code)) state.langs.delete(code); else state.langs.add(code);
+                chip.classList.toggle('on', state.langs.has(code));
+                state.shown = 40;
+                render();
+            });
+            $refresh.addEventListener('click', load);
+            $more.addEventListener('click', () => { state.shown += 40; render(); });
+            document.getElementById('biosigClear').addEventListener('click', () => {
+                state.topic = 'all'; state.langs.clear(); state.query = ''; state.shown = 40;
+                $search.value = '';
+                $topicChips.querySelectorAll('.biosig-chip').forEach(c => c.classList.toggle('on', c.dataset.topic === 'all'));
+                $langChips.querySelectorAll('.biosig-chip').forEach(c => c.classList.remove('on'));
+                render();
+            });
+            let searchTimer;
+            $search.addEventListener('input', e => {
+                clearTimeout(searchTimer);
+                const v = e.target.value;
+                searchTimer = setTimeout(() => { state.query = v; state.shown = 40; render(); }, 180);
+            });
+
+            function focusTopic(id) {
+                state.topic = id; state.shown = 40;
+                $topicChips.querySelectorAll('.biosig-chip').forEach(c => c.classList.toggle('on', c.dataset.topic === id));
+                render();
+                document.getElementById('biosigFeed').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            document.querySelectorAll('[data-feedfilter]').forEach(btn => {
+                btn.addEventListener('click', e => { e.stopPropagation(); focusTopic(btn.dataset.feedfilter); });
+            });
+
+            load();
+            setInterval(() => { if (!document.hidden) load(); }, 15 * 60 * 1000);
+        })();
+    </script>
+</body>
+</html>
