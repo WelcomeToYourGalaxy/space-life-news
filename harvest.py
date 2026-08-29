@@ -52,9 +52,9 @@ TOPICS = [
         ("perseverance", ["rover", "nasa", "mars", "jezero"]), ("jezero", None), ("cheyava", None),
         ("mars sample return", None), ("curiosity rover", None), ("tianwen", None), ("exomars", None),
         ("marte", ["vida", "nasa", "muestra", "rover", "planeta", "sonda", "marziano", "campioni", "amostra"]),
-        ("mars", ["rover", "nasa", "planet", "planète", "martian", "martien", "marsprobe", "marsproben",
+        ("mars", ["rover", "nasa", "planet", "planète", "martian*", "martien*", "marsprobe", "marsproben",
                   "sample", "leben", "vie", "life", "esa", "jpl", "orbiter", "jezero", "perseverance"]),
-        ("martian", None), ("martien", None), ("火星", None), ("화성", None), ("марс", None),
+        ("martian*", None), ("martien*", None), ("火星", None), ("화성", None), ("марс", None),
         ("المريخ", None), ("मंगल", None), ("mangal grah", None),
     ]),
     ("europa", "Europa", [
@@ -88,8 +88,8 @@ TOPICS = [
                    "probe", "davinci", "veritas", "nube"]),
         ("金星", ["生命", "ホスフィン", "大気", "生物"]),
     ]),
-    ("exoplanet", "Exoplanets", [
-        ("exoplanet", None), ("exoplanète", None), ("exoplaneta", None), ("esopianeta", None),
+    ("exoplanet*", "Exoplanets", [
+        ("exoplanet*", None), ("exoplanète*", None), ("exoplaneta*", None), ("esopianeta", None),
         ("exoplaneet", None), ("egzoplaneta", None), ("экзопланет", None), ("екзопланет", None),
         ("系外行星", None), ("太陽系外惑星", None), ("외계행성", None), ("ötegezegen", None),
         ("eksoplanet", None), ("बाह्यग्रह", None), ("trappist-1", None), ("proxima b", None),
@@ -97,19 +97,19 @@ TOPICS = [
         ("ariel mission", None), ("plato mission", None), ("habitable worlds observatory", None),
     ]),
     ("seti", "SETI & technosignatures", [
-        ("technosignature", None), ("tecnofirma", None), ("технsignature", None),
+        ("technosignature*", None), ("tecnofirma", None), ("технsignature", None),
         ("seti", ["alien", "signal", "institute", "radio", "search", "extraterrestrial",
                   "institut", "señal", "sinal", "сигнал"]),
         ("breakthrough listen", None), ("wow signal", None), ("allen telescope array", None),
     ]),
     ("method", "Detection methods", [
-        ("biosignature", None), ("biosignatur", None), ("biofirma", None), ("bioseñal", None),
+        ("biosignature*", None), ("biosignatur*", None), ("biofirma", None), ("bioseñal", None),
         ("bioassinatura", None), ("биосигнатур", None), ("バイオシグネチャー", None),
         ("生物特征", None), ("생물징후", None),
-        ("astrobiolog", None), ("exobiolog", None), ("astrobiyoloji", None), ("астробиолог", None),
+        ("astrobiolog*", None), ("exobiolog*", None), ("astrobiyoloji", None), ("астробиолог", None),
         ("астробіолог", None), ("宇宙生物学", None), ("天体生物学", None), ("天體生物學", None),
         ("우주생물학", None), ("ชีวดาราศาสตร์", None), ("علم الأحياء الفلكي", None),
-        ("extremophile", None), ("panspermia", None), ("prebiotic chemistry", None),
+        ("extremophile*", None), ("panspermia", None), ("prebiotic chemistry", None),
         ("origin of life", ["space", "astro", "planet", "cosmic", "ocean", "hydrothermal"]),
     ]),
 ]
@@ -128,9 +128,9 @@ TOPICS = [
 # astrology and the film franchise, which otherwise ride in on "alien life".
 # --------------------------------------------------------------------------
 CORE = [
-    "biosignature", "biosignatur", "biofirma", "bioseñal", "bioassinatura", "биосигнатур",
+    "biosignature*", "biosignatur*", "biofirma", "bioseñal", "bioassinatura", "биосигнатур",
     "バイオシグネチャー", "生物特征", "生物標誌", "생물징후", "بصمة حيوية",
-    "astrobiolog", "exobiolog", "astrobiyoloji", "астробиолог", "астробіолог", "astrobiologi",
+    "astrobiolog*", "exobiolog*", "astrobiyoloji", "астробиолог", "астробіолог", "astrobiologi",
     "astrobiologia", "astrobiologie", "astrobiología", "宇宙生物学", "天体生物学", "天體生物學",
     "우주생물학", "ชีวดาราศาสตร์", "علم الأحياء الفلكي", "खगोल जीवविज्ञान",
     "extraterrestrial life", "alien life", "life beyond earth", "life elsewhere in the universe",
@@ -140,9 +140,9 @@ CORE = [
     "ভিনগ্রহের প্রাণ", "kehidupan luar angkasa", "dünya dışı yaşam", "buitenaards leven",
     "życie pozaziemskie", "utomjordiskt liv", "sự sống ngoài trái đất", "สิ่งมีชีวิตนอกโลก",
     "uhai nje ya dunia", "εξωγήινη ζωή", "חיים מחוץ לכדור הארץ",
-    "technosignature", "tecnofirma", "technosignatur", "seti institute", "breakthrough listen",
+    "technosignature*", "tecnofirma", "technosignatur", "seti institute", "breakthrough listen",
     "allen telescope array", "search for extraterrestrial intelligence",
-    "panspermia", "panspermie", "lithopanspermia", "extremophile", "extremófil", "extremophil",
+    "panspermia", "panspermie", "lithopanspermia", "extremophile*", "extremófil*", "extremophil*",
     "prebiotic chemistry", "chimie prébiotique", "química prebiótica", "präbiotische chemie",
     "origin of life", "origine de la vie", "origen de la vida", "origem da vida",
     "ursprung des lebens", "происхождение жизни", "生命の起源", "生命起源", "생명의 기원",
@@ -163,11 +163,14 @@ CORE = [
 ASTRO_GUARD = [
     "nasa", "esa", "jaxa", "cassini", "clipper", "juice", "spacecraft", "probe", "orbiter",
     "flyby", "mission", "moon", "moons", "saturn", "jupiter", "ocean", "ice", "icy", "plume",
-    "geyser", "cryovolcan", "hydrothermal", "astronom", "planetary", "telescope",
+    "geyser", "cryovolcan*", "hydrothermal", "astronom*", "planetary", "telescope",
     "lune", "luna", "lua", "mond", "maan", "księżyc", "satélite", "satellite", "спутник",
     "saturne", "saturno", "júpiter", "jupiter", "giove", "сатурн", "юпитер",
     "土星", "木星", "衛星", "探査", "탐사", "위성", "قمر", "زحل", "المشتري", "فضاء",
-    "océan", "océano", "oceano", "ozean", "океан", "海洋", "바다", "महासागर", "hielo", "glace",
+    "océan", "océano", "oceano", "oceanico", "ozean", "океан", "海洋", "바다", "महासागर",
+    "hielo", "glace", "gelo", "ghiacc*", "ghiacciato", "banquise", "lunar", "lunaire",
+    "sonda", "misión", "missione", "missão", "missie", "raumsonde", "espace", "espacio",
+    "espaço", "spazio", "weltraum", "космос", "宇宙",
 ]
 
 TARGETS = [
@@ -189,35 +192,35 @@ TARGETS = [
 
 # Everything else that MIGHT be about life — kept only alongside a LIFE word.
 WEAK = [
-    "mars", "marte", "martian", "martien", "火星", "화성", "марс", "المريخ", "मंगल",
+    "mars", "marte", "martian*", "martien*", "火星", "화성", "марс", "المريخ", "मंगल",
     "perseverance", "curiosity rover", "exomars", "tianwen",
     "venus", "vénus", "金星", "phosphine", "fosfina", "фосфин", "ホスフィン",
-    "exoplanet", "exoplanète", "exoplaneta", "esopianeta", "exoplaneet", "egzoplaneta",
+    "exoplanet*", "exoplanète*", "exoplaneta*", "esopianeta", "exoplaneet", "egzoplaneta",
     "экзопланет", "екзопланет", "系外行星", "太陽系外惑星", "외계행성", "ötegezegen",
     "eksoplanet", "बाह्यग्रह", "trappist-1", "proxima b", "super-earth", "super-terre",
     "supertierra", "subsurface ocean", "océan sous-glaciaire", "océano subsuperficial",
-    "plume", "panache", "penacho", "羽流", "cryovolcan", "hydrothermal",
+    "plume", "panache", "penacho", "羽流", "cryovolcan*", "hydrothermal",
     "organic molecule", "molécules organiques", "moléculas orgánicas", "organics",
     "有機分子", "유기 분자", "amino acid", "acides aminés", "aminoácido", "aminosäure",
     "アミノ酸", "아미노산", "methane", "méthane", "metano", "メタン", "메탄",
-    "interstellar comet", "comet", "comète", "cometa", "meteorite", "météorite", "meteorito",
+    "interstellar comet", "comet*", "comète", "cometa", "meteorite*", "météorite", "meteorito",
 ]
 
 LIFE = [
-    "life", "living", "alive", "biolog", "microb", "microorganism", "micro-organism",
-    "bacteri", "cell ", "cells", "dna", "rna", "metabolis", "photosynth", "fossil",
-    "habitab", "inhabit", "biosign", "biomarker", "organic", "prebiotic", "amino acid",
-    "vie", "vivant", "biologi", "vida", "viva", "vita", "leben", "lebens", "bewohnbar",
+    "life", "living", "alive", "biolog*", "microb*", "microorganism*", "micro-organism*",
+    "bacteri*", "dna", "rna", "metabolis*", "photosynth*", "fossil",
+    "habitab*", "inhabit*", "biosign*", "biomarker", "organic*", "prebiotic*", "amino acid",
+    "vie", "vivant", "biologi*", "vida", "viva", "vita", "leben", "lebens", "bewohnbar",
     "жизн", "биолог", "микроб", "обитаем", "生命", "生物", "微生物", "有機", "宜居",
     "생명", "생물", "유기", "حياة", "حيوي", "أحياء", "حیات", "जीवन", "जैव", "প্রাণ",
-    "hayat", "yaşam", "kehidupan", "hidup", "liv", "życie", "ζωή", "βιολογ",
-    "sự sống", "sinh vật", "ชีวิต", "uhai", "חיים", "ביולוג", "habitável", "habitabil",
+    "hayat", "yaşam", "kehidupan", "hidup", "liv", "livet", "życie", "ζωή", "βιολογ",
+    "sự sống", "sinh vật", "ชีวิต", "uhai", "חיים", "ביולוג", "habitável", "habitabil*",
 ]
 
 BLOCK = [
     "ufo", "u.f.o", "ovni", "uap sighting", "unidentified flying", "unidentified aerial",
     "flying saucer", "roswell", "area 51", "abduction", "alien invasion", "alien: earth",
-    "alien romulus", "xenomorph", "box office", "horoscope", "astrolog", "астролог",
+    "alien romulus", "xenomorph", "box office", "horoscope", "astrolog*", "астролог",
     "zodiac", "tarot", "conspiracy", "теория заговора", "占星",
     "europa league", "champions league", "conference league", "europa conference",
     # funding notices, calls and other administrative traffic on institutional feeds
@@ -226,6 +229,46 @@ BLOCK = [
     "job opening", "postdoctoral position", "now accepting applications",
     "explained in telugu", "explained in hindi", "in tamil |", "full episode",
 ]
+
+
+# --------------------------------------------------------------------------
+# Matching.  A bare substring test lets "view" satisfy the French word for
+# life and "titanium" satisfy Titan, which is how orbit-navigation stories got
+# into an astrobiology feed.  Latin-script terms are therefore matched on word
+# edges; a trailing * matches the whole word family (astrobiolog* covers
+# astrobiology, astrobiologist, astrobiological).  Terms in scripts without
+# word breaks — Chinese, Japanese, Thai — stay substring matches.
+# --------------------------------------------------------------------------
+def _compile(term):
+    if any(ord(ch) > 0x24F for ch in term):        # non-Latin script
+        return term
+    if term.endswith("*"):
+        return re.compile(r"(?<![a-z0-9])" + re.escape(term[:-1]) + r"[a-z0-9\-]*", re.I)
+    return re.compile(r"(?<![a-z0-9])" + re.escape(term) + r"(?![a-z0-9])", re.I)
+
+
+def _compile_all(terms):
+    return [_compile(t) for t in terms]
+
+
+def hit(text, compiled):
+    """True when any compiled term matches."""
+    for c in compiled:
+        if isinstance(c, str):
+            if c in text:
+                return True
+        elif c.search(text):
+            return True
+    return False
+
+
+CORE_C = _compile_all(CORE)
+WEAK_C = _compile_all(WEAK)
+LIFE_C = _compile_all(LIFE)
+BLOCK_C = _compile_all(BLOCK)
+TARGETS_C = [(_compile(t), _compile_all(g) if g else None) for t, g in TARGETS]
+TOPICS_C = [(tid, label, [(_compile(t), _compile_all(g) if g else None) for t, g in terms])
+            for tid, label, terms in TOPICS]
 
 TAG_RE = re.compile(r"<[^>]+>")
 WS_RE = re.compile(r"\s+")
@@ -378,11 +421,11 @@ def parse_feed(raw, src):
 # ------------------------------------------------------------- classifying
 def topics_for(text):
     hits = []
-    for tid, _label, terms in TOPICS:
+    for tid, _label, terms in TOPICS_C:
         for term, guards in terms:
-            if term not in text:
+            if not hit(text, [term]):
                 continue
-            if guards and not any(g in text for g in guards):
+            if guards and not hit(text, guards):
                 continue
             hits.append(tid)
             break
@@ -393,19 +436,23 @@ def relevant(text, strict=False):
     """CORE alone keeps a story.  A named biosignature target keeps on its own.
     Anything weaker keeps only alongside a LIFE word — and on a `strict` source
     (a general space desk) a LIFE word is required either way."""
-    if any(b in text for b in BLOCK):
+    if hit(text, BLOCK_C):
         return False
-    if any(c in text for c in CORE):
+    if hit(text, CORE_C):
         return True
-    target = any(term in text and (not guards or any(g in text for g in guards))
-                 for term, guards in TARGETS)
-    weak = any(o in text for o in WEAK)
-    life = any(l in text for l in LIFE)
+    named = any(hit(text, [term]) for term, _g in TARGETS_C)
+    guarded = any(hit(text, [term]) and (not guards or hit(text, guards))
+                  for term, guards in TARGETS_C)
+    weak = hit(text, WEAK_C)
+    life = hit(text, LIFE_C)
     if strict:
-        # A general space desk has to say what it is about: a target or a
-        # candidate body is not enough on its own, a life word must be there too.
-        return (target or weak) and life
-    return target or (weak and life)
+        # A general space desk has to say what it is about: naming a body is not
+        # enough on its own, a life word has to be there too.
+        return (named or weak) and life
+    # A guarded target keeps by itself — Enceladus beside Saturn, ice or a plume
+    # is only ever the ocean-world story.  A bare mention keeps only with a life
+    # word, which is what separates the moon from the racehorse of the same name.
+    return guarded or ((named or weak) and life)
 
 
 def fingerprint(title):
