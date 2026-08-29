@@ -63,7 +63,7 @@
 .bsg-lede strong { color: var(--ink); font-weight: 500; }
 
 /* ---------- Stage ---------- */
-.bsg-body { flex: 1 1 54%; min-height: 0; max-width: 1320px; width: 100%; margin: 0 auto;
+.bsg-body { flex: 1 1 52%; min-height: 230px; max-width: 1320px; width: 100%; margin: 0 auto;
     display: grid; grid-template-columns: minmax(0, 1.62fr) minmax(280px, 1fr); gap: clamp(0.6rem, 1.4vw, 1.1rem); align-items: stretch; }
 
 .bsg-stage {
@@ -129,7 +129,6 @@
 .bsg-mission-name { color: var(--dc); font-weight: 500; }
 .bsg-mission-when { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin: 0.1rem 0 0.3rem; }
 
-.bsg-detail-cta { margin-top: auto; padding-top: 0.7rem; }
 .bsg-link {
     font-family: inherit; font-size: 0.66rem; letter-spacing: 0.06em; color: var(--ink);
     background: rgba(255,255,255,0.05); border: 1px solid var(--line); border-radius: 999px;
@@ -138,14 +137,24 @@
 .bsg-link:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.22); }
 
 /* ---------- Method notes ---------- */
-.bsg-notes { flex: 0 0 auto; max-width: 1320px; width: 100%; margin: 0 auto; display: grid;
-    grid-template-columns: repeat(3, 1fr); gap: clamp(0.5rem, 1.2vw, 0.9rem); }
+/* Method and sources live in overlay panels so they cost the layout nothing
+   until they are opened — that height goes to the story list instead. */
+.bsg-sheet { position: absolute; left: clamp(0.7rem, 2vw, 1.4rem); right: clamp(0.7rem, 2vw, 1.4rem);
+    bottom: 2.6rem; z-index: 30; max-height: 64%; overflow-y: auto; display: none;
+    border: 1px solid var(--line); border-radius: 14px; padding: 0.9rem 1rem;
+    background: rgba(10,15,28,0.96); backdrop-filter: blur(10px);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+.bsg-sheet.open { display: block; }
+.bsg-sheet-close { position: absolute; top: 0.5rem; right: 0.7rem; background: none; border: 0;
+    color: var(--ink-faint); font-size: 1rem; cursor: pointer; font-family: inherit; line-height: 1; }
+.bsg-sheet-close:hover { color: var(--ink); }
+.bsg-notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.5rem, 1.2vw, 0.9rem); }
 .bsg-note { border: 1px solid var(--line-soft); border-radius: 12px; padding: 0.5rem 0.7rem; background: var(--glass); }
 .bsg-note h3 { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 0.86rem; margin: 0 0 0.12rem; color: #f2f5fa; }
 .bsg-note p { font-size: clamp(0.58rem, 0.72vw, 0.65rem); line-height: 1.45; color: var(--ink-dim); margin: 0; }
 
 /* ---------- Feed ---------- */
-.bsg-feed { flex: 1 1 44%; min-height: 0; max-width: 1320px; width: 100%; margin: 0 auto; border: 1px solid var(--line-soft); border-radius: 16px; background: rgba(255,255,255,0.022); overflow: hidden; display: flex; flex-direction: column; }
+.bsg-feed { flex: 1 1 48%; min-height: 250px; min-height: 0; max-width: 1320px; width: 100%; margin: 0 auto; border: 1px solid var(--line-soft); border-radius: 16px; background: rgba(255,255,255,0.022); overflow: hidden; display: flex; flex-direction: column; }
 .bsg-feed-head { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 0.5rem 0.9rem 0.45rem; border-bottom: 1px solid var(--line-soft); }
 .bsg-feed-title { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 1.05rem; margin: 0; display: flex; align-items: center; gap: 0.45rem; color: #f4f7fb; }
 .bsg-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 4px rgba(74,222,128,0.14); animation: bsg-pulse 2.6s ease-in-out infinite; }
@@ -156,8 +165,17 @@
 .bsg-progress { height: 2px; background: rgba(255,255,255,0.06); }
 .bsg-progress-fill { height: 100%; width: 0; background: var(--enceladus); transition: width 0.35s ease; }
 
-.bsg-filters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 0.3rem; padding: 0.45rem 0.9rem; border-bottom: 1px solid var(--line-soft); }
+.bsg-filters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 0.28rem; padding: 0.4rem 0.9rem; border-bottom: 1px solid var(--line-soft); }
 .bsg-frow { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+/* one line each, scrolled sideways — wrapping these rows is what used to
+   squeeze the story list down to nothing on a short window */
+.bsg-scrollrow { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; padding-bottom: 1px; }
+.bsg-scrollrow::-webkit-scrollbar { height: 0; }
+.bsg-scrollrow .bsg-fkey { position: sticky; left: 0; background: linear-gradient(90deg, #0a0f1c 70%, transparent); padding-right: 0.35rem; z-index: 1; flex: 0 0 auto; }
+.bsg-scrollrow .bsg-chip { flex: 0 0 auto; }
+.bsg-head-tools { display: flex; align-items: center; gap: 0.4rem; flex: 1 1 240px; justify-content: flex-end; max-width: 460px; }
+.bsg-head-tools .bsg-search { flex: 1 1 auto; }
+.bsg-head-tools .bsg-link { flex: 0 0 auto; font-size: 0.62rem; }
 .bsg-fkey { font-size: 0.53rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-faint); margin-right: 0.2rem; }
 .bsg-chip { font-family: inherit; font-size: 0.64rem; color: var(--ink-dim); background: rgba(255,255,255,0.03); border: 1px solid var(--line-soft); border-radius: 999px; padding: 0.2rem 0.6rem; cursor: pointer; white-space: nowrap; }
 .bsg-chip:hover { color: var(--ink); border-color: rgba(255,255,255,0.2); }
@@ -168,7 +186,7 @@
 .bsg-search::placeholder { color: var(--ink-faint); }
 .bsg-search:focus { outline: none; border-color: rgba(255,255,255,0.24); }
 
-.bsg-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
+.bsg-list { flex: 1 1 auto; min-height: 118px; overflow-y: auto; scrollbar-width: thin; overscroll-behavior: contain; }
 .bsg-item { display: block; padding: 0.5rem 0.9rem; border-bottom: 1px solid var(--line-soft); text-decoration: none; color: inherit; }
 .bsg-item:last-child { border-bottom: 0; }
 .bsg-item:hover { background: rgba(255,255,255,0.035); }
@@ -181,16 +199,10 @@
 .bsg-t { font-size: 0.53rem; letter-spacing: 0.14em; text-transform: uppercase; border: 1px solid; border-radius: 999px; padding: 0.08rem 0.42rem; }
 .bsg-state { padding: 1.6rem 1.1rem; text-align: center; font-size: 0.74rem; color: var(--ink-dim); line-height: 1.6; }
 .bsg-state strong { color: var(--ink); font-weight: 500; }
-.bsg-more { flex: 0 0 auto; width: 100%; border: 0; border-top: 1px solid var(--line-soft); background: rgba(255,255,255,0.02); font-family: inherit; font-size: 0.66rem; color: var(--ink-dim); padding: 0.55rem; cursor: pointer; letter-spacing: 0.06em; }
+.bsg-more { display: block; width: 100%; border: 0; border-top: 1px solid var(--line-soft); background: rgba(255,255,255,0.02); font-family: inherit; font-size: 0.64rem; color: var(--ink-dim); padding: 0.45rem; cursor: pointer; letter-spacing: 0.06em; }
 .bsg-more:hover { color: var(--ink); }
 
-.bsg-cov { flex: 0 0 auto; border-top: 1px solid var(--line-soft); background: rgba(255,255,255,0.02); max-height: 46%; overflow-y: auto; }
-.bsg-cov summary { cursor: pointer; font-size: 0.63rem; color: var(--ink-dim); padding: 0.5rem 1.1rem; list-style: none; letter-spacing: 0.06em; }
-.bsg-cov summary::-webkit-details-marker { display: none; }
-.bsg-cov summary::before { content: '+ '; color: var(--ink-faint); }
-.bsg-cov[open] summary::before { content: '– '; }
-.bsg-cov summary:hover { color: var(--ink); }
-.bsg-cov-body { padding: 0 1.1rem 0.9rem; }
+
 .bsg-cov-note { font-size: 0.68rem; line-height: 1.6; color: var(--ink-dim); margin: 0 0 0.6rem; max-width: 90ch; }
 .bsg-cov-note a { color: var(--enceladus); }
 .bsg-src-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.1rem 0.9rem; }
@@ -198,7 +210,14 @@
 .bsg-src span:last-child { font-variant-numeric: tabular-nums; color: var(--ink-faint); }
 .bsg-src.fail span:last-child { color: #d98a8a; }
 
-.bsg-foot { flex: 0 0 auto; max-width: 1320px; width: 100%; margin: 0 auto; padding-top: 0.45rem; border-top: 1px solid var(--line-soft); font-size: 0.57rem; color: var(--ink-faint); line-height: 1.45; }
+.bsg-foot { flex: 0 0 auto; max-width: 1320px; width: 100%; margin: 0 auto; padding-top: 0.4rem;
+    border-top: 1px solid var(--line-soft); font-size: 0.57rem; color: var(--ink-faint); line-height: 1.4;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.bsg-foot-tools { display: flex; gap: 0.35rem; flex: 0 0 auto; }
+.bsg-tab { font-family: inherit; font-size: 0.58rem; letter-spacing: 0.08em; color: var(--ink-dim);
+    background: rgba(255,255,255,0.04); border: 1px solid var(--line-soft); border-radius: 999px;
+    padding: 0.2rem 0.6rem; cursor: pointer; }
+.bsg-tab:hover, .bsg-tab.on { color: var(--ink); border-color: rgba(255,255,255,0.24); }
 
 @media (max-width: 900px) {
     .bsg { height: auto; min-height: 0; overflow: visible; }
@@ -206,6 +225,7 @@
     .bsg-detail { overflow: visible; }
     .bsg-notes { grid-template-columns: 1fr; }
     .bsg-feed { flex: 0 0 auto; }
+    .bsg-sheet { position: fixed; left: 0.6rem; right: 0.6rem; bottom: 0.6rem; max-height: 72vh; }
     .bsg-list { max-height: 440px; }
 
     /* the drifting composition would clip on a narrow screen, so the worlds
@@ -245,7 +265,37 @@
         <aside class="bsg-detail" id="bsgDetail" aria-live="polite"></aside>
     </div>
 
-    <div class="bsg-notes">
+
+
+    <section class="bsg-feed" id="bsgFeed" aria-label="Live astrobiology news feed">
+        <div class="bsg-feed-head">
+            <div>
+                <h2 class="bsg-feed-title"><span class="bsg-dot idle" id="bsgDot"></span> Live coverage</h2>
+                <p class="bsg-feed-sub" id="bsgStatus">Loading the wire…</p>
+            </div>
+            <div class="bsg-head-tools">
+                <input class="bsg-search" id="bsgSearch" type="search" placeholder="plume, dimethyl sulfide, Perseverance…" aria-label="Filter headlines">
+                <button class="bsg-link" id="bsgClear">Clear</button>
+                <button class="bsg-link" id="bsgRefresh">Refresh</button>
+            </div>
+        </div>
+        <div class="bsg-progress"><div class="bsg-progress-fill" id="bsgProgress"></div></div>
+
+        <div class="bsg-filters">
+            <div class="bsg-frow bsg-scrollrow" id="bsgTopicChips"><span class="bsg-fkey">Subject</span></div>
+            <div class="bsg-frow bsg-scrollrow" id="bsgLangChips"><span class="bsg-fkey">Language</span></div>
+        </div>
+
+        <div class="bsg-list" id="bsgList"><div class="bsg-state">Loading the wire…</div></div>
+        <button class="bsg-more" id="bsgMore" style="display:none;">Show more</button>
+
+
+    </section>
+
+
+    <div class="bsg-sheet" id="bsgSheetMethod" role="dialog" aria-label="Method">
+        <button class="bsg-sheet-close" data-close aria-label="Close">×</button>
+        <div class="bsg-notes">
         <div class="bsg-note">
             <h3>What the numbers are</h3>
             <p>Drawn from peer-reviewed work, NASA and ESA mission data, expert consensus and habitability assessments. A definitive claim requires 5-sigma confidence — about 99.99997% certainty.</p>
@@ -259,34 +309,11 @@
             <p>A first detection could come within 10 to 20 years — from returned Mars samples, direct sampling of the Enceladus plume, or what Europa Clipper finds beneath the ice.</p>
         </div>
     </div>
+    </div>
 
-    <section class="bsg-feed" id="bsgFeed" aria-label="Live astrobiology news feed">
-        <div class="bsg-feed-head">
-            <div>
-                <h2 class="bsg-feed-title"><span class="bsg-dot idle" id="bsgDot"></span> Live coverage</h2>
-                <p class="bsg-feed-sub" id="bsgStatus">Loading the wire…</p>
-            </div>
-            <button class="bsg-link" id="bsgRefresh">Refresh</button>
-        </div>
-        <div class="bsg-progress"><div class="bsg-progress-fill" id="bsgProgress"></div></div>
-
-        <div class="bsg-filters">
-            <div class="bsg-frow" id="bsgTopicChips"><span class="bsg-fkey">Subject</span></div>
-            <div class="bsg-frow"><span class="bsg-fkey">Language</span><div class="bsg-frow" id="bsgLangChips" style="gap:0.3rem;"></div></div>
-            <div class="bsg-frow">
-                <span class="bsg-fkey">Find</span>
-                <input class="bsg-search" id="bsgSearch" type="search" placeholder="plume, dimethyl sulfide, Perseverance…" aria-label="Filter headlines">
-                <button class="bsg-link" id="bsgClear" style="font-size:0.62rem;">Clear</button>
-            </div>
-        </div>
-
-        <div class="bsg-list" id="bsgList"><div class="bsg-state">Loading the wire…</div></div>
-        <button class="bsg-more" id="bsgMore" style="display:none;">Show more</button>
-
-        <details class="bsg-cov">
-            <summary>Sources and coverage</summary>
-            <div class="bsg-cov-body">
-                <p class="bsg-cov-note">
+    <div class="bsg-sheet" id="bsgSheetSources" role="dialog" aria-label="Sources and coverage">
+        <button class="bsg-sheet-close" data-close aria-label="Close">×</button>
+        <p class="bsg-cov-note">
                     Stories are collected every two hours by a harvester in
                     <a href="https://github.com/WelcomeToYourGalaxy/space-life-news" target="_blank" rel="noopener noreferrer">WelcomeToYourGalaxy/space-life-news</a>,
                     reading institutional newsrooms, science desks, the arXiv preprint server and Google News regional
@@ -297,13 +324,16 @@
                     shown as zero, because coverage is uneven by language and the counts say where.
                 </p>
                 <div class="bsg-src-grid" id="bsgSrcGrid"></div>
-            </div>
-        </details>
-    </section>
+        
+    </div>
 
     <footer class="bsg-foot">
-        Compiled from NASA, ESA, Nature, The Astrophysical Journal and peer-reviewed astrobiology research.
-        Probability figures are assessments of current evidence, not measurements, and carry no certainty.
+        <span>Compiled from NASA, ESA, Nature, The Astrophysical Journal and peer-reviewed astrobiology research.
+        Probability figures are assessments of current evidence, not measurements, and carry no certainty.</span>
+        <span class="bsg-foot-tools">
+            <button class="bsg-tab" data-sheet="bsgSheetMethod">Method</button>
+            <button class="bsg-tab" data-sheet="bsgSheetSources">Sources &amp; coverage</button>
+        </span>
     </footer>
 </div>
 
@@ -585,10 +615,9 @@ function select(id) {
         '<div class="bsg-block"><div class="bsg-block-key">What would settle it</div>' +
             '<div class="bsg-block-text"><span class="bsg-mission-name">' + esc(w.mission) + '</span>' +
             '<div class="bsg-mission-when">' + esc(w.when) + '</div>' + esc(w.missionText) + '</div></div>' +
-        '<div class="bsg-detail-cta"><button class="bsg-link" data-feedfilter="' + w.id + '">Read ' + esc(w.name) + ' coverage ↓</button></div>';
+        "" +
+        '';
 
-    const jump = detail.querySelector('[data-feedfilter]');
-    if (jump) jump.addEventListener('click', () => focusTopic(w.id));
     renderBodyCounts();
 }
 
@@ -716,15 +745,20 @@ function render() {
                 (i.snippet ? '<div class="bsg-snip">' + esc(i.snippet) + '</div>' : '') +
                 '<div class="bsg-tags">' + tags + '</div></a>';
         }).join('');
-        $more.style.display = items.length > state.shown ? 'block' : 'none';
-        $more.textContent = 'Show more (' + (items.length - state.shown) + ' remaining)';
+        if (items.length > state.shown) {
+            $more.textContent = 'Show more (' + (items.length - state.shown) + ' remaining)';
+            $more.style.display = 'block';
+            $list.appendChild($more);
+        } else {
+            $more.style.display = 'none';
+        }
     }
     chipCounts(); renderBodyCounts();
 }
 
 function buildChips() {
     $topics.querySelectorAll('.bsg-chip').forEach(c => c.remove());
-    $langs.innerHTML = '';
+    $langs.querySelectorAll('.bsg-chip').forEach(c => c.remove());
     const all = document.createElement('button');
     all.className = 'bsg-chip' + (state.topic === 'all' ? ' on' : '');
     all.dataset.topic = 'all';
@@ -805,6 +839,28 @@ $langs.addEventListener('click', e => {
 });
 $refresh.addEventListener('click', load);
 $more.addEventListener('click', () => { state.shown += 40; render(); });
+
+/* method / sources sheets */
+document.querySelectorAll('.bsg-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        const sheet = document.getElementById(tab.dataset.sheet);
+        const opening = !sheet.classList.contains('open');
+        document.querySelectorAll('.bsg-sheet').forEach(s2 => s2.classList.remove('open'));
+        document.querySelectorAll('.bsg-tab').forEach(t => t.classList.remove('on'));
+        if (opening) { sheet.classList.add('open'); tab.classList.add('on'); }
+    });
+});
+document.querySelectorAll('.bsg-sheet [data-close]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        btn.closest('.bsg-sheet').classList.remove('open');
+        document.querySelectorAll('.bsg-tab').forEach(t => t.classList.remove('on'));
+    });
+});
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    document.querySelectorAll('.bsg-sheet').forEach(s2 => s2.classList.remove('open'));
+    document.querySelectorAll('.bsg-tab').forEach(t => t.classList.remove('on'));
+});
 document.getElementById('bsgClear').addEventListener('click', () => {
     state.topic = 'all'; state.langs.clear(); state.query = ''; state.shown = 40; $search.value = '';
     $topics.querySelectorAll('.bsg-chip').forEach(c => c.classList.toggle('on', c.dataset.topic === 'all'));
