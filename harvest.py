@@ -285,6 +285,103 @@ def build_gnews_url(loc):
             "&hl=" + loc["hl"] + "&gl=" + loc["gl"] + "&ceid=" + loc["ceid"])
 
 
+# ---------------------------------------------------------------- placement
+# Where an observation was made: telescopes, arrays and announcing institutions.
+# A story places only when one of these is named. Nothing is guessed from a
+# country: "a Chinese launch" is not a point, and inventing one would put a pin
+# somewhere nothing happened.
+SITES = {
+    'allen telescope array': ('Allen Telescope Array', 40.82, -121.47),
+    'alma': ('ALMA, Chajnantor', -23.03, -67.75),
+    'ames research center': ('NASA Ames', 37.41, -122.06),
+    'amundsen-scott': ('Amundsen–Scott Station', -90.0, 0.0),
+    'apache point': ('Apache Point', 32.78, -105.82),
+    'arecibo': ('Arecibo (former)', 18.34, -66.75),
+    'australia telescope compact array': ('ATCA, Narrabri', -30.31, 149.55),
+    'calar alto': ('Calar Alto', 37.22, -2.55),
+    'cerro armazones': ('ELT, Cerro Armazones', -24.59, -70.19),
+    'cerro tololo': ('Cerro Tololo', -30.17, -70.81),
+    'chajnantor': ('ALMA, Chajnantor', -23.03, -67.75),
+    'dome a': ('Dome A, Antarctica', -80.37, 77.35),
+    'effelsberg': ('Effelsberg', 50.52, 6.88),
+    'extremely large telescope': ('ELT, Cerro Armazones', -24.59, -70.19),
+    'fast telescope': ('FAST, Guizhou', 25.65, 106.86),
+    'five-hundred-meter': ('FAST, Guizhou', 25.65, 106.86),
+    'gemini north': ('Gemini North', 19.82, -155.47),
+    'gemini south': ('Gemini South', -30.24, -70.74),
+    'giant metrewave': ('GMRT, Pune', 19.09, 74.05),
+    'gran telescopio canarias': ('Gran Telescopio Canarias', 28.76, -17.89),
+    'green bank': ('Green Bank Telescope', 38.43, -79.84),
+    'guizhou': ('FAST, Guizhou', 25.65, 106.86),
+    'haleakala': ('Haleakalā', 20.71, -156.26),
+    'haleakalā': ('Haleakalā', 20.71, -156.26),
+    'hanle': ('Hanle, Ladakh', 32.78, 78.96),
+    'hartebeesthoek': ('Hartebeesthoek', -25.89, 27.69),
+    'harvard-smithsonian': ('CfA, Cambridge MA', 42.38, -71.13),
+    'hat creek': ('Allen Telescope Array', 40.82, -121.47),
+    'indian astronomical observatory': ('Hanle, Ladakh', 32.78, 78.96),
+    'institute of astrophysics of the canaries': ('IAC, Tenerife', 28.3, -16.51),
+    'iram': ('IRAM, Pico Veleta', 37.07, -3.39),
+    'james clerk maxwell': ('JCMT, Mauna Kea', 19.82, -155.48),
+    'jodrell bank': ('Jodrell Bank', 53.24, -2.31),
+    'keck': ('Keck Observatory', 19.83, -155.47),
+    'kitt peak': ('Kitt Peak', 31.96, -111.6),
+    'la palma': ('Roque de los Muchachos, La Palma', 28.75, -17.89),
+    'la silla': ('La Silla', -29.26, -70.73),
+    'large binocular telescope': ('Large Binocular Telescope', 32.7, -109.89),
+    'las campanas': ('Las Campanas', -29.02, -70.69),
+    'lick observatory': ('Lick Observatory', 37.34, -121.64),
+    'lofar': ('LOFAR, Exloo', 52.91, 6.87),
+    'mauna kea': ('Mauna Kea', 19.82, -155.47),
+    'max planck institute for astronomy': ('MPIA, Heidelberg', 49.4, 8.72),
+    'mcdonald observatory': ('McDonald Observatory', 30.67, -104.02),
+    'meerkat': ('MeerKAT, Karoo', -30.72, 21.44),
+    'mount stromlo': ('Mount Stromlo', -35.32, 149.01),
+    'mount wilson': ('Mount Wilson', 34.23, -118.06),
+    'murchison widefield': ('MWA, Murchison', -26.7, 116.67),
+    'murriyang': ('Parkes (Murriyang)', -32.998, 148.26),
+    'nancay': ('Nançay', 47.38, 2.2),
+    'nançay': ('Nançay', 47.38, 2.2),
+    'nobeyama': ('Nobeyama', 35.94, 138.48),
+    'noema': ('NOEMA, Plateau de Bure', 44.63, 5.91),
+    'palomar': ('Palomar Observatory', 33.36, -116.86),
+    'paranal': ('VLT, Paranal', -24.63, -70.4),
+    'parkes': ('Parkes (Murriyang)', -32.998, 148.26),
+    'plateau de bure': ('NOEMA, Plateau de Bure', 44.63, 5.91),
+    'purple mountain': ('Purple Mountain Observatory', 32.07, 118.83),
+    'roque de los muchachos': ('Roque de los Muchachos, La Palma', 28.75, -17.89),
+    'rubin observatory': ('Vera C. Rubin Observatory', -30.24, -70.75),
+    'seti institute': ('SETI Institute, Mountain View', 37.39, -122.08),
+    'siding spring': ('Siding Spring', -31.27, 149.07),
+    'south african large telescope': ('SALT, Sutherland', -32.38, 20.81),
+    'south pole telescope': ('South Pole Telescope', -89.99, -63.45),
+    'southwest research institute': ('SwRI, Boulder', 40.02, -105.26),
+    'space telescope science institute': ('STScI, Baltimore', 39.33, -76.62),
+    'square kilometre array': ('SKA, Karoo & Murchison', -30.72, 21.44),
+    'subaru telescope': ('Subaru Telescope', 19.83, -155.48),
+    'sutherland observatory': ('SALT, Sutherland', -32.38, 20.81),
+    'teide observatory': ('Teide Observatory', 28.3, -16.51),
+    'vera rubin': ('Vera C. Rubin Observatory', -30.24, -70.75),
+    'very large array': ('Very Large Array', 34.08, -107.62),
+    'very large telescope': ('VLT, Paranal', -24.63, -70.4),
+    'westerbork': ('Westerbork', 52.91, 6.6),
+}
+
+
+def site_for(text):
+    """(label, [lat, lon]) for the site named in the text, or (None, None).
+    Longest key first, so a specific pad beats the range it sits on."""
+    low = " " + re.sub(r"[^a-z0-9\u00c0-\u024f]+", " ", (text or "").lower()) + " "
+    for key in _SITE_KEYS:
+        if " " + key + " " in low:
+            label, lat, lon = SITES[key]
+            return label, [lat, lon]
+    return None, None
+
+
+_SITE_KEYS = sorted(SITES, key=len, reverse=True)
+
+
 def load_sources():
     with open(SOURCES_PATH, encoding="utf-8") as fh:
         cfg = json.load(fh)
@@ -417,6 +514,7 @@ def parse_feed(raw, src):
             "d": stamp,
             "s": snippet,
             "w": src["name"],
+            "pn": None, "ll": None,
         })
     return out
 
@@ -526,6 +624,7 @@ def run(dry_run=False, fixtures=None):
                 if not relevant(text, src.get("strict", False)):
                     continue
                 row["x"] = topics_for(text) or ["method"]
+                row["pn"], row["ll"] = site_for(text)
                 if absorb(row):
                     stat["kept"] += 1
         stats.append(stat)
