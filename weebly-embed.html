@@ -1,3 +1,21 @@
+<!-- ============================================================
+     Biosignature Evidence Assessment · Weebly embed
+     Paste this whole block into a Weebly "Embed Code" element.
+
+     HEIGHT. The frame is a fixed 1500px, written into the tag below in both the
+     height attribute and the style, so it exists before any script runs and
+     nothing moves it afterwards. To change the length, change BOTH numbers.
+     ============================================================ -->
+<div id="galaxy-biosig-embed" style="width:100%;margin:0;padding:0;">
+  <iframe id="galaxy-biosig-frame"
+          title="Biosignature Evidence Assessment"
+          height="1500"
+          style="width:100%;height:1500px;border:0;display:block;background:#0c0d0b;border-radius:14px;overflow:hidden;"
+          scrolling="no"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
+
+<script type="text/plain" id="galaxy-biosig-doc">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1031,6 +1049,21 @@ select('enceladus');
 load();
 setInterval(() => { if (!document.hidden) load(); }, 15 * 60 * 1000);
 })();
-</script>
+@@GALAXY_END_SCRIPT@@
 </body>
 </html>
+
+</script>
+
+<script>
+/* Embed shell — build 2026-08-30g. Injects the document, nothing else. */
+(function () {
+    var frame = document.getElementById('galaxy-biosig-frame');
+    var store = document.getElementById('galaxy-biosig-doc');
+    if (!frame || !store) return;
+    var doc = store.textContent.split('@@GALAXY_END_SCRIPT@@').join('<' + '/script>');
+    try { console.info('space-life-news: embed build 2026-08-30g'); } catch (e) {}
+    if ('srcdoc' in frame) { frame.srcdoc = doc; }
+    else { var d = frame.contentWindow.document; d.open(); d.write(doc); d.close(); }
+})();
+</script>

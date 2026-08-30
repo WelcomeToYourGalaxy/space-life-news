@@ -37,7 +37,7 @@ RETAIN_DAYS = 45          # older stories are dropped on every run
 MAX_ITEMS = 900           # hard cap on wire.json, newest kept
 SNIPPET_CHARS = 240
 TIMEOUT = 25
-WORKERS = 6
+WORKERS = 10         # a few hundred wires now
 USER_AGENT = ("Mozilla/5.0 (compatible; space-life-news/1.0; "
               "+https://github.com/WelcomeToYourGalaxy/space-life-news)")
 
@@ -241,7 +241,10 @@ BLOCK = [
 # --------------------------------------------------------------------------
 def _compile(term):
     if any(ord(ch) > 0x24F for ch in term):        # non-Latin script
-        return term
+        # substring matching is already prefix-like in scripts without word
+        # breaks, so a trailing * is a no-op — strip it rather than search for
+        # a literal asterisk, which is what used to happen.
+        return term[:-1] if term.endswith("*") else term
     if term.endswith("*"):
         return re.compile(r"(?<![a-z0-9])" + re.escape(term[:-1]) + r"[a-z0-9\-]*", re.I)
     return re.compile(r"(?<![a-z0-9])" + re.escape(term) + r"(?![a-z0-9])", re.I)
@@ -542,7 +545,7 @@ def run(dry_run=False, fixtures=None):
 
     languages = {}
     for loc in cfg.get("gnews", []):
-        languages.setdefault(loc["lang"], re.sub(r"\s*\(.*\)$", "", loc["label"]))
+        languages.setdefault(loc["lang"], re.sub(r"\s*·.*$|\s*\(.*$|\s+\d+$", "", loc["label"]).strip())
     languages.setdefault("en", "English")
 
     payload = {

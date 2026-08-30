@@ -1,5 +1,5 @@
 {
-  "_note": "Edit this file to add, remove or retune wires. harvest.py reads it directly; nothing else needs changing. 'query' is only used for the gnews block, and is written in the language of the locale. If a wire 404s, the run log names it and the page shows it as unreachable — fix the URL here or drop the entry. Set \"strict\": true on a general space desk — its stories must name the search for life outright, not merely a body that might host it.",
+  "_note": "Edit this file to add, remove or retune wires. harvest.py reads it directly; nothing else needs changing. 'query' is only used for the gnews block, and is written in the language of the locale. If a wire 404s, the run log names it and the page shows it as unreachable — fix the URL here or drop the entry. Set \"strict\": true on a general space desk — its stories must name the search for life outright, not merely a body that might host it. Locale coverage is expanded: several country editions per language, and each query split into slices so no single search hits Google News's ~100-result cap.",
   "direct": [
     {
       "name": "NASA",
@@ -132,292 +132,1156 @@
   ],
   "gnews": [
     {
-      "label": "English",
+      "label": "English (US) 1",
       "lang": "en",
       "region": "North America",
       "hl": "en-US",
       "gl": "US",
       "ceid": "US:en",
-      "query": "biosignature OR astrobiology OR \"extraterrestrial life\" OR Enceladus OR \"Europa Clipper\" OR \"K2-18b\" OR \"Mars sample return\""
+      "query": "biosignature OR astrobiology OR \"extraterrestrial life\""
     },
     {
-      "label": "English (UK)",
+      "label": "English (US) 2",
+      "lang": "en",
+      "region": "North America",
+      "hl": "en-US",
+      "gl": "US",
+      "ceid": "US:en",
+      "query": "Enceladus OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "English (US) 3",
+      "lang": "en",
+      "region": "North America",
+      "hl": "en-US",
+      "gl": "US",
+      "ceid": "US:en",
+      "query": "\"Mars sample return\""
+    },
+    {
+      "label": "English (GB) 1",
+      "lang": "en",
+      "region": "North America",
+      "hl": "en-GB",
+      "gl": "GB",
+      "ceid": "GB:en",
+      "query": "biosignature OR astrobiology OR \"extraterrestrial life\""
+    },
+    {
+      "label": "English (GB) 2",
+      "lang": "en",
+      "region": "North America",
+      "hl": "en-GB",
+      "gl": "GB",
+      "ceid": "GB:en",
+      "query": "Enceladus OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "English (GB) 3",
+      "lang": "en",
+      "region": "North America",
+      "hl": "en-GB",
+      "gl": "GB",
+      "ceid": "GB:en",
+      "query": "\"Mars sample return\""
+    },
+    {
+      "label": "English (IN) 1",
+      "lang": "en",
+      "region": "North America",
+      "hl": "en-IN",
+      "gl": "IN",
+      "ceid": "IN:en",
+      "query": "biosignature OR astrobiology OR \"extraterrestrial life\""
+    },
+    {
+      "label": "English (IN) 2",
+      "lang": "en",
+      "region": "North America",
+      "hl": "en-IN",
+      "gl": "IN",
+      "ceid": "IN:en",
+      "query": "Enceladus OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "English (IN) 3",
+      "lang": "en",
+      "region": "North America",
+      "hl": "en-IN",
+      "gl": "IN",
+      "ceid": "IN:en",
+      "query": "\"Mars sample return\""
+    },
+    {
+      "label": "English (UK) (US) 1",
+      "lang": "en",
+      "region": "Western Europe",
+      "hl": "en-US",
+      "gl": "US",
+      "ceid": "US:en",
+      "query": "biosignature OR astrobiology OR \"alien life\""
+    },
+    {
+      "label": "English (UK) (GB) 1",
       "lang": "en",
       "region": "Western Europe",
       "hl": "en-GB",
       "gl": "GB",
       "ceid": "GB:en",
-      "query": "biosignature OR astrobiology OR \"alien life\" OR Enceladus OR \"Europa Clipper\" OR \"K2-18b\""
+      "query": "biosignature OR astrobiology OR \"alien life\""
     },
     {
-      "label": "English (India)",
+      "label": "English (UK) (IN) 1",
+      "lang": "en",
+      "region": "Western Europe",
+      "hl": "en-IN",
+      "gl": "IN",
+      "ceid": "IN:en",
+      "query": "biosignature OR astrobiology OR \"alien life\""
+    },
+    {
+      "label": "English (India) (US) 1",
+      "lang": "en",
+      "region": "South Asia",
+      "hl": "en-US",
+      "gl": "US",
+      "ceid": "US:en",
+      "query": "astrobiology OR biosignature OR \"alien life\""
+    },
+    {
+      "label": "English (India) (US) 2",
+      "lang": "en",
+      "region": "South Asia",
+      "hl": "en-US",
+      "gl": "US",
+      "ceid": "US:en",
+      "query": "Enceladus OR \"Europa Clipper\" OR \"life on Mars\""
+    },
+    {
+      "label": "English (India) (GB) 1",
+      "lang": "en",
+      "region": "South Asia",
+      "hl": "en-GB",
+      "gl": "GB",
+      "ceid": "GB:en",
+      "query": "astrobiology OR biosignature OR \"alien life\""
+    },
+    {
+      "label": "English (India) (GB) 2",
+      "lang": "en",
+      "region": "South Asia",
+      "hl": "en-GB",
+      "gl": "GB",
+      "ceid": "GB:en",
+      "query": "Enceladus OR \"Europa Clipper\" OR \"life on Mars\""
+    },
+    {
+      "label": "English (India) (IN) 1",
       "lang": "en",
       "region": "South Asia",
       "hl": "en-IN",
       "gl": "IN",
       "ceid": "IN:en",
-      "query": "astrobiology OR biosignature OR \"alien life\" OR Enceladus OR \"Europa Clipper\" OR \"life on Mars\""
+      "query": "astrobiology OR biosignature OR \"alien life\""
     },
     {
-      "label": "English (Aus)",
+      "label": "English (India) (IN) 2",
+      "lang": "en",
+      "region": "South Asia",
+      "hl": "en-IN",
+      "gl": "IN",
+      "ceid": "IN:en",
+      "query": "Enceladus OR \"Europa Clipper\" OR \"life on Mars\""
+    },
+    {
+      "label": "English (Aus) (AU) 1",
       "lang": "en",
       "region": "Oceania",
       "hl": "en-AU",
       "gl": "AU",
       "ceid": "AU:en",
-      "query": "astrobiology OR biosignature OR \"alien life\" OR Enceladus OR \"exoplanet atmosphere\""
+      "query": "astrobiology OR biosignature OR \"alien life\""
     },
     {
-      "label": "English (S. Africa)",
+      "label": "English (Aus) (AU) 2",
+      "lang": "en",
+      "region": "Oceania",
+      "hl": "en-AU",
+      "gl": "AU",
+      "ceid": "AU:en",
+      "query": "Enceladus OR \"exoplanet atmosphere\""
+    },
+    {
+      "label": "English (Aus) (US) 2",
+      "lang": "en",
+      "region": "Oceania",
+      "hl": "en-US",
+      "gl": "US",
+      "ceid": "US:en",
+      "query": "Enceladus OR \"exoplanet atmosphere\""
+    },
+    {
+      "label": "English (Aus) (GB) 2",
+      "lang": "en",
+      "region": "Oceania",
+      "hl": "en-GB",
+      "gl": "GB",
+      "ceid": "GB:en",
+      "query": "Enceladus OR \"exoplanet atmosphere\""
+    },
+    {
+      "label": "English (S. Africa) (ZA) 1",
       "lang": "en",
       "region": "Sub-Saharan Africa",
       "hl": "en-ZA",
       "gl": "ZA",
       "ceid": "ZA:en",
-      "query": "astrobiology OR biosignature OR \"alien life\" OR exoplanet OR \"life on Mars\""
+      "query": "astrobiology OR biosignature OR \"alien life\""
     },
     {
-      "label": "English (Nigeria)",
+      "label": "English (S. Africa) (ZA) 2",
+      "lang": "en",
+      "region": "Sub-Saharan Africa",
+      "hl": "en-ZA",
+      "gl": "ZA",
+      "ceid": "ZA:en",
+      "query": "exoplanet OR \"life on Mars\""
+    },
+    {
+      "label": "English (S. Africa) (US) 2",
+      "lang": "en",
+      "region": "Sub-Saharan Africa",
+      "hl": "en-US",
+      "gl": "US",
+      "ceid": "US:en",
+      "query": "exoplanet OR \"life on Mars\""
+    },
+    {
+      "label": "English (S. Africa) (GB) 2",
+      "lang": "en",
+      "region": "Sub-Saharan Africa",
+      "hl": "en-GB",
+      "gl": "GB",
+      "ceid": "GB:en",
+      "query": "exoplanet OR \"life on Mars\""
+    },
+    {
+      "label": "English (Nigeria) (NG) 1",
       "lang": "en",
       "region": "Sub-Saharan Africa",
       "hl": "en-NG",
       "gl": "NG",
       "ceid": "NG:en",
-      "query": "astrobiology OR \"alien life\" OR exoplanet OR \"life on Mars\""
+      "query": "astrobiology OR \"alien life\" OR exoplanet"
     },
     {
-      "label": "Español",
+      "label": "English (Nigeria) (NG) 2",
+      "lang": "en",
+      "region": "Sub-Saharan Africa",
+      "hl": "en-NG",
+      "gl": "NG",
+      "ceid": "NG:en",
+      "query": "\"life on Mars\""
+    },
+    {
+      "label": "English (Nigeria) (US) 1",
+      "lang": "en",
+      "region": "Sub-Saharan Africa",
+      "hl": "en-US",
+      "gl": "US",
+      "ceid": "US:en",
+      "query": "astrobiology OR \"alien life\" OR exoplanet"
+    },
+    {
+      "label": "English (Nigeria) (US) 2",
+      "lang": "en",
+      "region": "Sub-Saharan Africa",
+      "hl": "en-US",
+      "gl": "US",
+      "ceid": "US:en",
+      "query": "\"life on Mars\""
+    },
+    {
+      "label": "English (Nigeria) (GB) 1",
+      "lang": "en",
+      "region": "Sub-Saharan Africa",
+      "hl": "en-GB",
+      "gl": "GB",
+      "ceid": "GB:en",
+      "query": "astrobiology OR \"alien life\" OR exoplanet"
+    },
+    {
+      "label": "English (Nigeria) (GB) 2",
+      "lang": "en",
+      "region": "Sub-Saharan Africa",
+      "hl": "en-GB",
+      "gl": "GB",
+      "ceid": "GB:en",
+      "query": "\"life on Mars\""
+    },
+    {
+      "label": "Español (ES) 1",
       "lang": "es",
       "region": "Western Europe",
       "hl": "es",
       "gl": "ES",
       "ceid": "ES:es",
-      "query": "astrobiología OR bioseñal OR \"vida extraterrestre\" OR Encélado OR \"Europa Clipper\" OR \"K2-18b\""
+      "query": "astrobiología OR bioseñal OR \"vida extraterrestre\""
     },
     {
-      "label": "Español (MX)",
+      "label": "Español (ES) 2",
+      "lang": "es",
+      "region": "Western Europe",
+      "hl": "es",
+      "gl": "ES",
+      "ceid": "ES:es",
+      "query": "Encélado OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "Español (MX) 1",
+      "lang": "es",
+      "region": "Western Europe",
+      "hl": "es-419",
+      "gl": "MX",
+      "ceid": "MX:es-419",
+      "query": "astrobiología OR bioseñal OR \"vida extraterrestre\""
+    },
+    {
+      "label": "Español (MX) 2",
+      "lang": "es",
+      "region": "Western Europe",
+      "hl": "es-419",
+      "gl": "MX",
+      "ceid": "MX:es-419",
+      "query": "Encélado OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "Español (AR) 1",
+      "lang": "es",
+      "region": "Western Europe",
+      "hl": "es-419",
+      "gl": "AR",
+      "ceid": "AR:es-419",
+      "query": "astrobiología OR bioseñal OR \"vida extraterrestre\""
+    },
+    {
+      "label": "Español (AR) 2",
+      "lang": "es",
+      "region": "Western Europe",
+      "hl": "es-419",
+      "gl": "AR",
+      "ceid": "AR:es-419",
+      "query": "Encélado OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "Español (MX) (ES) 1",
+      "lang": "es",
+      "region": "Latin America",
+      "hl": "es",
+      "gl": "ES",
+      "ceid": "ES:es",
+      "query": "astrobiología OR \"vida extraterrestre\" OR Encélado"
+    },
+    {
+      "label": "Español (MX) (ES) 2",
+      "lang": "es",
+      "region": "Latin America",
+      "hl": "es",
+      "gl": "ES",
+      "ceid": "ES:es",
+      "query": "\"exoplaneta habitable\" OR \"muestras de Marte\""
+    },
+    {
+      "label": "Español (MX) (MX) 1",
       "lang": "es",
       "region": "Latin America",
       "hl": "es-419",
       "gl": "MX",
       "ceid": "MX:es-419",
-      "query": "astrobiología OR \"vida extraterrestre\" OR Encélado OR \"exoplaneta habitable\" OR \"muestras de Marte\""
+      "query": "astrobiología OR \"vida extraterrestre\" OR Encélado"
     },
     {
-      "label": "Português",
+      "label": "Español (MX) (MX) 2",
+      "lang": "es",
+      "region": "Latin America",
+      "hl": "es-419",
+      "gl": "MX",
+      "ceid": "MX:es-419",
+      "query": "\"exoplaneta habitable\" OR \"muestras de Marte\""
+    },
+    {
+      "label": "Español (MX) (AR) 1",
+      "lang": "es",
+      "region": "Latin America",
+      "hl": "es-419",
+      "gl": "AR",
+      "ceid": "AR:es-419",
+      "query": "astrobiología OR \"vida extraterrestre\" OR Encélado"
+    },
+    {
+      "label": "Español (MX) (AR) 2",
+      "lang": "es",
+      "region": "Latin America",
+      "hl": "es-419",
+      "gl": "AR",
+      "ceid": "AR:es-419",
+      "query": "\"exoplaneta habitable\" OR \"muestras de Marte\""
+    },
+    {
+      "label": "Português (BR) 1",
       "lang": "pt",
       "region": "Latin America",
       "hl": "pt-BR",
       "gl": "BR",
       "ceid": "BR:pt-419",
-      "query": "astrobiologia OR bioassinatura OR \"vida extraterrestre\" OR Encélado OR \"Europa Clipper\" OR \"exoplaneta habitável\""
+      "query": "astrobiologia OR bioassinatura OR \"vida extraterrestre\""
     },
     {
-      "label": "Français",
+      "label": "Português (BR) 2",
+      "lang": "pt",
+      "region": "Latin America",
+      "hl": "pt-BR",
+      "gl": "BR",
+      "ceid": "BR:pt-419",
+      "query": "Encélado OR \"Europa Clipper\" OR \"exoplaneta habitável\""
+    },
+    {
+      "label": "Português (PT) 1",
+      "lang": "pt",
+      "region": "Latin America",
+      "hl": "pt-BR",
+      "gl": "PT",
+      "ceid": "PT:pt-150",
+      "query": "astrobiologia OR bioassinatura OR \"vida extraterrestre\""
+    },
+    {
+      "label": "Português (PT) 2",
+      "lang": "pt",
+      "region": "Latin America",
+      "hl": "pt-BR",
+      "gl": "PT",
+      "ceid": "PT:pt-150",
+      "query": "Encélado OR \"Europa Clipper\" OR \"exoplaneta habitável\""
+    },
+    {
+      "label": "Português (AO) 1",
+      "lang": "pt",
+      "region": "Latin America",
+      "hl": "pt-BR",
+      "gl": "AO",
+      "ceid": "AO:pt-150",
+      "query": "astrobiologia OR bioassinatura OR \"vida extraterrestre\""
+    },
+    {
+      "label": "Português (AO) 2",
+      "lang": "pt",
+      "region": "Latin America",
+      "hl": "pt-BR",
+      "gl": "AO",
+      "ceid": "AO:pt-150",
+      "query": "Encélado OR \"Europa Clipper\" OR \"exoplaneta habitável\""
+    },
+    {
+      "label": "Français (FR) 1",
       "lang": "fr",
       "region": "Western Europe",
       "hl": "fr",
       "gl": "FR",
       "ceid": "FR:fr",
-      "query": "astrobiologie OR biosignature OR \"vie extraterrestre\" OR Encelade OR \"Europa Clipper\" OR \"K2-18b\""
+      "query": "astrobiologie OR biosignature OR \"vie extraterrestre\""
     },
     {
-      "label": "Deutsch",
+      "label": "Français (FR) 2",
+      "lang": "fr",
+      "region": "Western Europe",
+      "hl": "fr",
+      "gl": "FR",
+      "ceid": "FR:fr",
+      "query": "Encelade OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "Français (BE) 1",
+      "lang": "fr",
+      "region": "Western Europe",
+      "hl": "fr",
+      "gl": "BE",
+      "ceid": "BE:fr",
+      "query": "astrobiologie OR biosignature OR \"vie extraterrestre\""
+    },
+    {
+      "label": "Français (BE) 2",
+      "lang": "fr",
+      "region": "Western Europe",
+      "hl": "fr",
+      "gl": "BE",
+      "ceid": "BE:fr",
+      "query": "Encelade OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "Français (CA) 1",
+      "lang": "fr",
+      "region": "Western Europe",
+      "hl": "fr",
+      "gl": "CA",
+      "ceid": "CA:fr",
+      "query": "astrobiologie OR biosignature OR \"vie extraterrestre\""
+    },
+    {
+      "label": "Français (CA) 2",
+      "lang": "fr",
+      "region": "Western Europe",
+      "hl": "fr",
+      "gl": "CA",
+      "ceid": "CA:fr",
+      "query": "Encelade OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "Deutsch (DE) 1",
       "lang": "de",
       "region": "Western Europe",
       "hl": "de",
       "gl": "DE",
       "ceid": "DE:de",
-      "query": "Astrobiologie OR Biosignatur OR \"außerirdisches Leben\" OR Enceladus OR \"Europa Clipper\" OR \"K2-18b\""
+      "query": "Astrobiologie OR Biosignatur OR \"außerirdisches Leben\""
     },
     {
-      "label": "Italiano",
+      "label": "Deutsch (DE) 2",
+      "lang": "de",
+      "region": "Western Europe",
+      "hl": "de",
+      "gl": "DE",
+      "ceid": "DE:de",
+      "query": "Enceladus OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "Deutsch (AT) 1",
+      "lang": "de",
+      "region": "Western Europe",
+      "hl": "de",
+      "gl": "AT",
+      "ceid": "AT:de",
+      "query": "Astrobiologie OR Biosignatur OR \"außerirdisches Leben\""
+    },
+    {
+      "label": "Deutsch (AT) 2",
+      "lang": "de",
+      "region": "Western Europe",
+      "hl": "de",
+      "gl": "AT",
+      "ceid": "AT:de",
+      "query": "Enceladus OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "Deutsch (CH) 1",
+      "lang": "de",
+      "region": "Western Europe",
+      "hl": "de",
+      "gl": "CH",
+      "ceid": "CH:de",
+      "query": "Astrobiologie OR Biosignatur OR \"außerirdisches Leben\""
+    },
+    {
+      "label": "Deutsch (CH) 2",
+      "lang": "de",
+      "region": "Western Europe",
+      "hl": "de",
+      "gl": "CH",
+      "ceid": "CH:de",
+      "query": "Enceladus OR \"Europa Clipper\" OR \"K2-18b\""
+    },
+    {
+      "label": "Italiano (IT) 1",
       "lang": "it",
       "region": "Western Europe",
       "hl": "it",
       "gl": "IT",
       "ceid": "IT:it",
-      "query": "astrobiologia OR biofirma OR \"vita extraterrestre\" OR Encelado OR \"Europa Clipper\" OR \"esopianeta abitabile\""
+      "query": "astrobiologia OR biofirma OR \"vita extraterrestre\""
     },
     {
-      "label": "Nederlands",
+      "label": "Italiano (IT) 2",
+      "lang": "it",
+      "region": "Western Europe",
+      "hl": "it",
+      "gl": "IT",
+      "ceid": "IT:it",
+      "query": "Encelado OR \"Europa Clipper\" OR \"esopianeta abitabile\""
+    },
+    {
+      "label": "Italiano (CH) 1",
+      "lang": "it",
+      "region": "Western Europe",
+      "hl": "it",
+      "gl": "CH",
+      "ceid": "CH:it",
+      "query": "astrobiologia OR biofirma OR \"vita extraterrestre\""
+    },
+    {
+      "label": "Italiano (CH) 2",
+      "lang": "it",
+      "region": "Western Europe",
+      "hl": "it",
+      "gl": "CH",
+      "ceid": "CH:it",
+      "query": "Encelado OR \"Europa Clipper\" OR \"esopianeta abitabile\""
+    },
+    {
+      "label": "Nederlands (NL) 1",
       "lang": "nl",
       "region": "Western Europe",
       "hl": "nl",
       "gl": "NL",
       "ceid": "NL:nl",
-      "query": "astrobiologie OR \"buitenaards leven\" OR Enceladus OR \"Europa Clipper\" OR \"leefbare exoplaneet\""
+      "query": "astrobiologie OR \"buitenaards leven\" OR Enceladus"
     },
     {
-      "label": "Svenska",
+      "label": "Nederlands (NL) 2",
+      "lang": "nl",
+      "region": "Western Europe",
+      "hl": "nl",
+      "gl": "NL",
+      "ceid": "NL:nl",
+      "query": "\"Europa Clipper\" OR \"leefbare exoplaneet\""
+    },
+    {
+      "label": "Nederlands (BE) 1",
+      "lang": "nl",
+      "region": "Western Europe",
+      "hl": "nl",
+      "gl": "BE",
+      "ceid": "BE:nl",
+      "query": "astrobiologie OR \"buitenaards leven\" OR Enceladus"
+    },
+    {
+      "label": "Nederlands (BE) 2",
+      "lang": "nl",
+      "region": "Western Europe",
+      "hl": "nl",
+      "gl": "BE",
+      "ceid": "BE:nl",
+      "query": "\"Europa Clipper\" OR \"leefbare exoplaneet\""
+    },
+    {
+      "label": "Svenska 1",
       "lang": "sv",
       "region": "Western Europe",
       "hl": "sv",
       "gl": "SE",
       "ceid": "SE:sv",
-      "query": "astrobiologi OR \"utomjordiskt liv\" OR Enceladus OR \"beboelig exoplanet\""
+      "query": "astrobiologi OR \"utomjordiskt liv\" OR Enceladus"
     },
     {
-      "label": "Ελληνικά",
+      "label": "Svenska 2",
+      "lang": "sv",
+      "region": "Western Europe",
+      "hl": "sv",
+      "gl": "SE",
+      "ceid": "SE:sv",
+      "query": "\"beboelig exoplanet\""
+    },
+    {
+      "label": "Ελληνικά 1",
       "lang": "el",
       "region": "Western Europe",
       "hl": "el",
       "gl": "GR",
       "ceid": "GR:el",
-      "query": "αστροβιολογία OR \"εξωγήινη ζωή\" OR Εγκέλαδος OR \"κατοικήσιμος εξωπλανήτης\""
+      "query": "αστροβιολογία OR \"εξωγήινη ζωή\" OR Εγκέλαδος"
     },
     {
-      "label": "Polski",
+      "label": "Ελληνικά 2",
+      "lang": "el",
+      "region": "Western Europe",
+      "hl": "el",
+      "gl": "GR",
+      "ceid": "GR:el",
+      "query": "\"κατοικήσιμος εξωπλανήτης\""
+    },
+    {
+      "label": "Polski 1",
       "lang": "pl",
       "region": "Eastern Europe",
       "hl": "pl",
       "gl": "PL",
       "ceid": "PL:pl",
-      "query": "astrobiologia OR \"życie pozaziemskie\" OR Enceladus OR \"Europa Clipper\" OR egzoplaneta"
+      "query": "astrobiologia OR \"życie pozaziemskie\" OR Enceladus"
     },
     {
-      "label": "Русский",
+      "label": "Polski 2",
+      "lang": "pl",
+      "region": "Eastern Europe",
+      "hl": "pl",
+      "gl": "PL",
+      "ceid": "PL:pl",
+      "query": "\"Europa Clipper\" OR egzoplaneta"
+    },
+    {
+      "label": "Русский (RU) 1",
       "lang": "ru",
       "region": "Eastern Europe",
       "hl": "ru",
       "gl": "RU",
       "ceid": "RU:ru",
-      "query": "астробиология OR биосигнатура OR \"внеземная жизнь\" OR Энцелад OR \"экзопланета жизнь\""
+      "query": "астробиология OR биосигнатура OR \"внеземная жизнь\""
     },
     {
-      "label": "Українська",
+      "label": "Русский (RU) 2",
+      "lang": "ru",
+      "region": "Eastern Europe",
+      "hl": "ru",
+      "gl": "RU",
+      "ceid": "RU:ru",
+      "query": "Энцелад OR \"экзопланета жизнь\""
+    },
+    {
+      "label": "Русский (KZ) 1",
+      "lang": "ru",
+      "region": "Eastern Europe",
+      "hl": "ru",
+      "gl": "KZ",
+      "ceid": "KZ:ru",
+      "query": "астробиология OR биосигнатура OR \"внеземная жизнь\""
+    },
+    {
+      "label": "Русский (KZ) 2",
+      "lang": "ru",
+      "region": "Eastern Europe",
+      "hl": "ru",
+      "gl": "KZ",
+      "ceid": "KZ:ru",
+      "query": "Энцелад OR \"экзопланета жизнь\""
+    },
+    {
+      "label": "Русский (BY) 1",
+      "lang": "ru",
+      "region": "Eastern Europe",
+      "hl": "ru",
+      "gl": "BY",
+      "ceid": "BY:ru",
+      "query": "астробиология OR биосигнатура OR \"внеземная жизнь\""
+    },
+    {
+      "label": "Русский (BY) 2",
+      "lang": "ru",
+      "region": "Eastern Europe",
+      "hl": "ru",
+      "gl": "BY",
+      "ceid": "BY:ru",
+      "query": "Энцелад OR \"экзопланета жизнь\""
+    },
+    {
+      "label": "Українська 1",
       "lang": "uk",
       "region": "Eastern Europe",
       "hl": "uk",
       "gl": "UA",
       "ceid": "UA:uk",
-      "query": "астробіологія OR \"позаземне життя\" OR Енцелад OR \"екзопланета життя\""
+      "query": "астробіологія OR \"позаземне життя\" OR Енцелад"
     },
     {
-      "label": "Türkçe",
+      "label": "Українська 2",
+      "lang": "uk",
+      "region": "Eastern Europe",
+      "hl": "uk",
+      "gl": "UA",
+      "ceid": "UA:uk",
+      "query": "\"екзопланета життя\""
+    },
+    {
+      "label": "Türkçe 1",
       "lang": "tr",
       "region": "MENA",
       "hl": "tr",
       "gl": "TR",
       "ceid": "TR:tr",
-      "query": "astrobiyoloji OR \"dünya dışı yaşam\" OR Enceladus OR \"Europa Clipper\" OR \"ötegezegen yaşam\""
+      "query": "astrobiyoloji OR \"dünya dışı yaşam\" OR Enceladus"
     },
     {
-      "label": "العربية",
+      "label": "Türkçe 2",
+      "lang": "tr",
+      "region": "MENA",
+      "hl": "tr",
+      "gl": "TR",
+      "ceid": "TR:tr",
+      "query": "\"Europa Clipper\" OR \"ötegezegen yaşam\""
+    },
+    {
+      "label": "العربية (EG) 1",
       "lang": "ar",
       "region": "MENA",
       "hl": "ar",
       "gl": "EG",
       "ceid": "EG:ar",
-      "query": "\"علم الأحياء الفلكي\" OR \"حياة خارج الأرض\" OR إنسيلادوس OR \"كوكب صالح للحياة\" OR \"الحياة على المريخ\""
+      "query": "\"علم الأحياء الفلكي\" OR \"حياة خارج الأرض\" OR إنسيلادوس"
     },
     {
-      "label": "עברית",
+      "label": "العربية (EG) 2",
+      "lang": "ar",
+      "region": "MENA",
+      "hl": "ar",
+      "gl": "EG",
+      "ceid": "EG:ar",
+      "query": "\"كوكب صالح للحياة\" OR \"الحياة على المريخ\""
+    },
+    {
+      "label": "العربية (SA) 1",
+      "lang": "ar",
+      "region": "MENA",
+      "hl": "ar",
+      "gl": "SA",
+      "ceid": "SA:ar",
+      "query": "\"علم الأحياء الفلكي\" OR \"حياة خارج الأرض\" OR إنسيلادوس"
+    },
+    {
+      "label": "العربية (SA) 2",
+      "lang": "ar",
+      "region": "MENA",
+      "hl": "ar",
+      "gl": "SA",
+      "ceid": "SA:ar",
+      "query": "\"كوكب صالح للحياة\" OR \"الحياة على المريخ\""
+    },
+    {
+      "label": "العربية (AE) 1",
+      "lang": "ar",
+      "region": "MENA",
+      "hl": "ar",
+      "gl": "AE",
+      "ceid": "AE:ar",
+      "query": "\"علم الأحياء الفلكي\" OR \"حياة خارج الأرض\" OR إنسيلادوس"
+    },
+    {
+      "label": "العربية (AE) 2",
+      "lang": "ar",
+      "region": "MENA",
+      "hl": "ar",
+      "gl": "AE",
+      "ceid": "AE:ar",
+      "query": "\"كوكب صالح للحياة\" OR \"الحياة على المريخ\""
+    },
+    {
+      "label": "עברית 1",
       "lang": "he",
       "region": "MENA",
       "hl": "iw",
       "gl": "IL",
       "ceid": "IL:iw",
-      "query": "אסטרוביולוגיה OR \"חיים מחוץ לכדור הארץ\" OR אנקלדוס OR \"כוכב לכת בר קיימא\""
+      "query": "אסטרוביולוגיה OR \"חיים מחוץ לכדור הארץ\" OR אנקלדוס"
     },
     {
-      "label": "فارسی",
+      "label": "עברית 2",
+      "lang": "he",
+      "region": "MENA",
+      "hl": "iw",
+      "gl": "IL",
+      "ceid": "IL:iw",
+      "query": "\"כוכב לכת בר קיימא\""
+    },
+    {
+      "label": "فارسی 1",
       "lang": "fa",
       "region": "MENA",
       "hl": "fa",
       "gl": "IR",
       "ceid": "IR:fa",
-      "query": "\"زیست‌شناسی فضایی\" OR \"حیات فرازمینی\" OR انسلادوس OR \"سیاره قابل سکونت\""
+      "query": "\"زیست‌شناسی فضایی\" OR \"حیات فرازمینی\" OR انسلادوس"
     },
     {
-      "label": "हिन्दी",
+      "label": "فارسی 2",
+      "lang": "fa",
+      "region": "MENA",
+      "hl": "fa",
+      "gl": "IR",
+      "ceid": "IR:fa",
+      "query": "\"سیاره قابل سکونت\""
+    },
+    {
+      "label": "हिन्दी 1",
       "lang": "hi",
       "region": "South Asia",
       "hl": "hi",
       "gl": "IN",
       "ceid": "IN:hi",
-      "query": "\"खगोल जीवविज्ञान\" OR \"परग्रही जीवन\" OR एन्सेलेडस OR \"मंगल पर जीवन\" OR बाह्यग्रह"
+      "query": "\"खगोल जीवविज्ञान\" OR \"परग्रही जीवन\" OR एन्सेलेडस"
     },
     {
-      "label": "বাংলা",
+      "label": "हिन्दी 2",
+      "lang": "hi",
+      "region": "South Asia",
+      "hl": "hi",
+      "gl": "IN",
+      "ceid": "IN:hi",
+      "query": "\"मंगल पर जीवन\" OR बाह्यग्रह"
+    },
+    {
+      "label": "বাংলা (BD) 1",
       "lang": "bn",
       "region": "South Asia",
       "hl": "bn",
       "gl": "BD",
       "ceid": "BD:bn",
-      "query": "\"ভিনগ্রহের প্রাণ\" OR জ্যোতির্জীববিজ্ঞান OR এনসেলাডাস OR \"মঙ্গলে প্রাণ\""
+      "query": "\"ভিনগ্রহের প্রাণ\" OR জ্যোতির্জীববিজ্ঞান OR এনসেলাডাস"
     },
     {
-      "label": "Bahasa Indonesia",
+      "label": "বাংলা (BD) 2",
+      "lang": "bn",
+      "region": "South Asia",
+      "hl": "bn",
+      "gl": "BD",
+      "ceid": "BD:bn",
+      "query": "\"মঙ্গলে প্রাণ\""
+    },
+    {
+      "label": "বাংলা (IN) 1",
+      "lang": "bn",
+      "region": "South Asia",
+      "hl": "bn",
+      "gl": "IN",
+      "ceid": "IN:bn",
+      "query": "\"ভিনগ্রহের প্রাণ\" OR জ্যোতির্জীববিজ্ঞান OR এনসেলাডাস"
+    },
+    {
+      "label": "বাংলা (IN) 2",
+      "lang": "bn",
+      "region": "South Asia",
+      "hl": "bn",
+      "gl": "IN",
+      "ceid": "IN:bn",
+      "query": "\"মঙ্গলে প্রাণ\""
+    },
+    {
+      "label": "Bahasa Indonesia 1",
       "lang": "id",
       "region": "Southeast Asia",
       "hl": "id",
       "gl": "ID",
       "ceid": "ID:id",
-      "query": "astrobiologi OR \"kehidupan luar angkasa\" OR Enceladus OR \"Europa Clipper\" OR \"eksoplanet layak huni\""
+      "query": "astrobiologi OR \"kehidupan luar angkasa\" OR Enceladus"
     },
     {
-      "label": "Tiếng Việt",
+      "label": "Bahasa Indonesia 2",
+      "lang": "id",
+      "region": "Southeast Asia",
+      "hl": "id",
+      "gl": "ID",
+      "ceid": "ID:id",
+      "query": "\"Europa Clipper\" OR \"eksoplanet layak huni\""
+    },
+    {
+      "label": "Tiếng Việt 1",
       "lang": "vi",
       "region": "Southeast Asia",
       "hl": "vi",
       "gl": "VN",
       "ceid": "VN:vi",
-      "query": "\"sự sống ngoài Trái Đất\" OR \"sinh học vũ trụ\" OR Enceladus OR \"hành tinh có thể sống\""
+      "query": "\"sự sống ngoài Trái Đất\" OR \"sinh học vũ trụ\" OR Enceladus"
     },
     {
-      "label": "ไทย",
+      "label": "Tiếng Việt 2",
+      "lang": "vi",
+      "region": "Southeast Asia",
+      "hl": "vi",
+      "gl": "VN",
+      "ceid": "VN:vi",
+      "query": "\"hành tinh có thể sống\""
+    },
+    {
+      "label": "ไทย 1",
       "lang": "th",
       "region": "Southeast Asia",
       "hl": "th",
       "gl": "TH",
       "ceid": "TH:th",
-      "query": "\"สิ่งมีชีวิตนอกโลก\" OR ชีวดาราศาสตร์ OR เอนเซลาดัส OR \"ดาวเคราะห์นอกระบบ\""
+      "query": "\"สิ่งมีชีวิตนอกโลก\" OR ชีวดาราศาสตร์ OR เอนเซลาดัส"
     },
     {
-      "label": "日本語",
+      "label": "ไทย 2",
+      "lang": "th",
+      "region": "Southeast Asia",
+      "hl": "th",
+      "gl": "TH",
+      "ceid": "TH:th",
+      "query": "\"ดาวเคราะห์นอกระบบ\""
+    },
+    {
+      "label": "日本語 1",
       "lang": "ja",
       "region": "East Asia",
       "hl": "ja",
       "gl": "JP",
       "ceid": "JP:ja",
-      "query": "宇宙生物学 OR 地球外生命 OR エンケラドス OR \"エウロパ 探査\" OR \"K2-18b\" OR \"火星 生命\""
+      "query": "宇宙生物学 OR 地球外生命 OR エンケラドス"
     },
     {
-      "label": "简体中文",
+      "label": "日本語 2",
+      "lang": "ja",
+      "region": "East Asia",
+      "hl": "ja",
+      "gl": "JP",
+      "ceid": "JP:ja",
+      "query": "\"エウロパ 探査\" OR \"K2-18b\" OR \"火星 生命\""
+    },
+    {
+      "label": "简体中文 (CN) 1",
       "lang": "zh",
       "region": "East Asia",
       "hl": "zh-CN",
       "gl": "CN",
       "ceid": "CN:zh-Hans",
-      "query": "天体生物学 OR 地外生命 OR 土卫二 OR 木卫二 OR \"系外行星 宜居\" OR \"火星 生命\""
+      "query": "天体生物学 OR 地外生命 OR 土卫二"
     },
     {
-      "label": "繁體中文",
+      "label": "简体中文 (CN) 2",
+      "lang": "zh",
+      "region": "East Asia",
+      "hl": "zh-CN",
+      "gl": "CN",
+      "ceid": "CN:zh-Hans",
+      "query": "木卫二 OR \"系外行星 宜居\" OR \"火星 生命\""
+    },
+    {
+      "label": "简体中文 (TW) 1",
       "lang": "zh",
       "region": "East Asia",
       "hl": "zh-TW",
       "gl": "TW",
       "ceid": "TW:zh-Hant",
-      "query": "天體生物學 OR 地外生命 OR 土衛二 OR 木衛二 OR \"系外行星 宜居\""
+      "query": "天体生物学 OR 地外生命 OR 土卫二"
     },
     {
-      "label": "한국어",
+      "label": "简体中文 (TW) 2",
+      "lang": "zh",
+      "region": "East Asia",
+      "hl": "zh-TW",
+      "gl": "TW",
+      "ceid": "TW:zh-Hant",
+      "query": "木卫二 OR \"系外行星 宜居\" OR \"火星 生命\""
+    },
+    {
+      "label": "简体中文 (HK) 1",
+      "lang": "zh",
+      "region": "East Asia",
+      "hl": "zh-HK",
+      "gl": "HK",
+      "ceid": "HK:zh-Hant",
+      "query": "天体生物学 OR 地外生命 OR 土卫二"
+    },
+    {
+      "label": "简体中文 (HK) 2",
+      "lang": "zh",
+      "region": "East Asia",
+      "hl": "zh-HK",
+      "gl": "HK",
+      "ceid": "HK:zh-Hant",
+      "query": "木卫二 OR \"系外行星 宜居\" OR \"火星 生命\""
+    },
+    {
+      "label": "繁體中文 (CN) 1",
+      "lang": "zh",
+      "region": "East Asia",
+      "hl": "zh-CN",
+      "gl": "CN",
+      "ceid": "CN:zh-Hans",
+      "query": "天體生物學 OR 地外生命 OR 土衛二"
+    },
+    {
+      "label": "繁體中文 (CN) 2",
+      "lang": "zh",
+      "region": "East Asia",
+      "hl": "zh-CN",
+      "gl": "CN",
+      "ceid": "CN:zh-Hans",
+      "query": "木衛二 OR \"系外行星 宜居\""
+    },
+    {
+      "label": "繁體中文 (TW) 1",
+      "lang": "zh",
+      "region": "East Asia",
+      "hl": "zh-TW",
+      "gl": "TW",
+      "ceid": "TW:zh-Hant",
+      "query": "天體生物學 OR 地外生命 OR 土衛二"
+    },
+    {
+      "label": "繁體中文 (TW) 2",
+      "lang": "zh",
+      "region": "East Asia",
+      "hl": "zh-TW",
+      "gl": "TW",
+      "ceid": "TW:zh-Hant",
+      "query": "木衛二 OR \"系外行星 宜居\""
+    },
+    {
+      "label": "繁體中文 (HK) 1",
+      "lang": "zh",
+      "region": "East Asia",
+      "hl": "zh-HK",
+      "gl": "HK",
+      "ceid": "HK:zh-Hant",
+      "query": "天體生物學 OR 地外生命 OR 土衛二"
+    },
+    {
+      "label": "繁體中文 (HK) 2",
+      "lang": "zh",
+      "region": "East Asia",
+      "hl": "zh-HK",
+      "gl": "HK",
+      "ceid": "HK:zh-Hant",
+      "query": "木衛二 OR \"系外行星 宜居\""
+    },
+    {
+      "label": "한국어 1",
       "lang": "ko",
       "region": "East Asia",
       "hl": "ko",
       "gl": "KR",
       "ceid": "KR:ko",
-      "query": "우주생물학 OR \"외계 생명\" OR 엔셀라두스 OR \"유로파 탐사\" OR \"외계행성 생명\""
+      "query": "우주생물학 OR \"외계 생명\" OR 엔셀라두스"
     },
     {
-      "label": "Kiswahili",
+      "label": "한국어 2",
+      "lang": "ko",
+      "region": "East Asia",
+      "hl": "ko",
+      "gl": "KR",
+      "ceid": "KR:ko",
+      "query": "\"유로파 탐사\" OR \"외계행성 생명\""
+    },
+    {
+      "label": "Kiswahili (KE) 1",
       "lang": "sw",
       "region": "Sub-Saharan Africa",
       "hl": "sw",
       "gl": "KE",
       "ceid": "KE:sw",
-      "query": "\"uhai nje ya dunia\" OR \"unajimu sayari\" OR Enceladus OR \"sayari yenye uhai\""
+      "query": "\"uhai nje ya dunia\" OR \"unajimu sayari\" OR Enceladus"
+    },
+    {
+      "label": "Kiswahili (KE) 2",
+      "lang": "sw",
+      "region": "Sub-Saharan Africa",
+      "hl": "sw",
+      "gl": "KE",
+      "ceid": "KE:sw",
+      "query": "\"sayari yenye uhai\""
+    },
+    {
+      "label": "Kiswahili (TZ) 1",
+      "lang": "sw",
+      "region": "Sub-Saharan Africa",
+      "hl": "sw",
+      "gl": "TZ",
+      "ceid": "TZ:sw",
+      "query": "\"uhai nje ya dunia\" OR \"unajimu sayari\" OR Enceladus"
+    },
+    {
+      "label": "Kiswahili (TZ) 2",
+      "lang": "sw",
+      "region": "Sub-Saharan Africa",
+      "hl": "sw",
+      "gl": "TZ",
+      "ceid": "TZ:sw",
+      "query": "\"sayari yenye uhai\""
     }
   ]
 }
