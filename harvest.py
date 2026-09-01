@@ -29,6 +29,20 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
+# The shared gazetteer. Placement used to be each wire's own short country
+# table, which put most of every wire in a counter marked "unplaced"; this is
+# the fleet's common one, and it is optional at import so a harvest still runs
+# if the data file has not been fetched yet.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    import galaxy_places
+    _GAZETTEER = True
+except Exception as _exc:                       # noqa: BLE001
+    print("  ! gazetteer unavailable (%s); falling back to the local table"
+          % _exc, file=sys.stderr)
+    galaxy_places = None
+    _GAZETTEER = False
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 SOURCES_PATH = os.path.join(HERE, "sources.json")
 OUT_PATH = os.path.join(HERE, "wire.json")
@@ -270,6 +284,23 @@ WEAK_C = _compile_all(WEAK)
 LIFE_C = _compile_all(LIFE)
 BLOCK_C = _compile_all(BLOCK)
 TARGETS_C = [(_compile(t), _compile_all(g) if g else None) for t, g in TARGETS]
+
+# --------------------------------------------------------------------------
+# The same subjects in the languages this wire's own queries ask in, derived
+# from those queries and filed under the subject each query's label names. The
+# gate above was written in English; the queries were translated and it was
+# not, so three quarters of what the wire fetched could not be recognised once
+# it arrived. Generated — edit topics_multilingual.json, or delete the file to
+# turn this off.
+# --------------------------------------------------------------------------
+_EXTRA_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           "topics_multilingual.json")
+if os.path.exists(_EXTRA_PATH):
+    with open(_EXTRA_PATH, encoding="utf-8") as _fh:
+        _EXTRA = json.load(_fh)
+    TOPICS = [(tid, label, terms + [(t, g) for t, g in _EXTRA.get(tid, [])])
+              for tid, label, terms in TOPICS]
+
 TOPICS_C = [(tid, label, [(_compile(t), _compile_all(g) if g else None) for t, g in terms])
             for tid, label, terms in TOPICS]
 
@@ -378,6 +409,24 @@ def site_for(text):
             return label, [lat, lon]
     return None, None
 
+def place_for(text, locale=None, raw=None):
+    """Where a story is: an observatory or launch site first, then any other
+    place the story names, then the country the source reports from — that last
+    one marked approximate, and drawn hollow on the page."""
+    label, point = site_for(text)
+    if point:
+        return label, point, False
+    if _GAZETTEER:
+        glabel, gpoint, _rank, _approx = galaxy_places.resolve_ranked(raw or text)
+        if gpoint:
+            return glabel, gpoint, False
+        if locale:
+            llabel, lpoint, _lr, lapprox = galaxy_places.resolve_ranked("", locale)
+            if lpoint:
+                return llabel, lpoint, lapprox
+    return None, None, False
+
+
 
 _SITE_KEYS = sorted(SITES, key=len, reverse=True)
 
@@ -395,14 +444,29 @@ def load_sources():
         srcs.append({
             "name": "Google News · " + loc["label"], "lang": loc["lang"],
             "lang_label": loc["label"], "region": loc["region"], "kind": "news",
-            "url": build_gnews_url(loc),
+            "url": build_gnews_url(loc), "gl": loc.get("gl"),
         })
     return srcs, cfg
+
+
+READ_BUDGET_MIN = 35          # minutes spent reading wires
+
+# The wall-clock budget for reading wires. Past it the remaining sources are
+# recorded unreachable and the harvest finishes on what it has, because the
+# wire is only written at the end of run() and a job killed by the workflow
+# timeout commits nothing at all — which is how a feed gets stuck stale.
+DEADLINE = None
+
+
+def out_of_time():
+    return DEADLINE is not None and time.monotonic() > DEADLINE
 
 
 def fetch(url, tries=3):
     last = None
     for attempt in range(tries):
+        if out_of_time():
+            return None
         try:
             req = urllib.request.Request(url, headers={
                 "User-Agent": USER_AGENT,
@@ -415,6 +479,16 @@ def fetch(url, tries=3):
                 if resp.headers.get("Content-Encoding") == "gzip":
                     raw = gzip.GzipFile(fileobj=io.BytesIO(raw)).read()
                 return raw
+        except urllib.error.HTTPError as exc:
+            last = exc
+            # Being rate-limited or refused is an answer, not a hiccup. Trying
+            # the same query twice more against the same limiter spends eighty
+            # seconds of a worker slot to be told the same thing, and deepens
+            # the throttle for every other query in the run.
+            if exc.code in (403, 429, 451):
+                time.sleep(1.5)
+                break
+            time.sleep(1.5 * (attempt + 1))
         except Exception as exc:                       # noqa: BLE001 — report, don't crash the run
             last = exc
             time.sleep(1.5 * (attempt + 1))
@@ -574,7 +648,10 @@ def canon_url(url):
 
 # ------------------------------------------------------------------- main
 def run(dry_run=False, fixtures=None):
+    global DEADLINE
     sources, cfg = load_sources()
+    if not fixtures:
+        DEADLINE = time.monotonic() + READ_BUDGET_MIN * 60
     print("Reading %d wires…" % len(sources))
 
     def read(src):
@@ -624,7 +701,9 @@ def run(dry_run=False, fixtures=None):
                 if not relevant(text, src.get("strict", False)):
                     continue
                 row["x"] = topics_for(text) or ["method"]
-                row["pn"], row["ll"] = site_for(text)
+                row["gl"] = src.get("gl")
+                row["pn"], row["ll"], row["pa"] = place_for(
+                    text, src.get("gl"), (row["t"] or "") + " " + (row.get("s") or ""))
                 if absorb(row):
                     stat["kept"] += 1
         stats.append(stat)
@@ -634,6 +713,15 @@ def run(dry_run=False, fixtures=None):
     for row in previous:
         if "x" not in row:
             continue
+        # A retained story is placed again rather than carried forward with the
+        # answer it happened to get the day it was first read. RETAIN_DAYS is
+        # 45, so without this a change to the placement layer takes a month and
+        # a half to reach the map. Rows already holding a point resolved from
+        # their own text are left alone.
+        if not row.get("ll") or row.get("pa"):
+            _raw = ((row.get("t") or "") + " " + (row.get("s") or ""))
+            row["pn"], row["ll"], row["pa"] = place_for(
+                _raw.lower(), row.get("gl"), _raw)
         absorb(row)
 
     cutoff = int(time.time() * 1000) - RETAIN_DAYS * 86400000
