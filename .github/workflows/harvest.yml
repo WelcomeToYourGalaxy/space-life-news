@@ -20,7 +20,7 @@ concurrency:
 jobs:
   harvest:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
 
@@ -35,20 +35,41 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add wire.json
-          if git diff --cached --quiet; then
-            echo "No change to wire.json"
+          BRANCH="${GITHUB_REF_NAME}"
+          WIRE="wire.json"
+          cp "$WIRE" /tmp/harvested.json
+
+          # The wire is regenerated whole on every run, so there is nothing in
+          # it to merge. A `git pull --rebase` here has two complete versions of
+          # one line of JSON and conflicts every time main has moved — and since
+          # GitHub runs this block under `bash -e`, that failure aborted the
+          # step before the retry loop it was written for could run. Take the
+          # remote, put our harvest back on top of it, and push again.
+          commit_wire() {
+            cp /tmp/harvested.json "$WIRE"
+            git add "$WIRE"
+            if git diff --cached --quiet; then
+              return 1
+            fi
+            COUNT=$(python3 -c "import json;print(json.load(open('wire.json'))['counts']['stories'])")
+            git commit -m "wire: $COUNT ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+            return 0
+          }
+
+          if ! commit_wire; then
+            echo "No change to $WIRE"
             exit 0
           fi
-          COUNT=$(python3 -c "import json;print(json.load(open('wire.json'))['counts']['stories'])")
-          git commit -m "wire: $COUNT stories ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+
           for attempt in 1 2 3 4 5; do
             if git push; then
               echo "Pushed on attempt $attempt"
               exit 0
             fi
-            echo "Push rejected — main moved. Rebasing and retrying (attempt $attempt)."
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+            echo "Push rejected — main moved. Taking the remote and re-applying the harvest (attempt $attempt)."
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+            commit_wire || { echo "Remote already has this wire"; exit 0; }
             sleep $((attempt * 5))
           done
           echo "Could not push after five attempts."
